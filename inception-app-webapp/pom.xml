@@ -97,6 +97,10 @@
       <groupId>de.tudarmstadt.ukp.inception.app</groupId>
       <artifactId>inception-example-imls-data-majority</artifactId>
     </dependency>
+    <dependency>
+        <groupId>de.tudarmstadt.ukp.inception.app</groupId>
+        <artifactId>inception-coclass-linking</artifactId>
+      </dependency>
 
     <!-- INCEPTION - ACTIVE LEARNING FUNCTIONALITY -->
     <dependency>
@@ -643,6 +647,7 @@
               <usedDependency>de.tudarmstadt.ukp.inception.app:inception-imls-external</usedDependency>
               <!-- usedDependency>de.tudarmstadt.ukp.inception.app:inception-imls-dl4j</usedDependency -->
               <usedDependency>de.tudarmstadt.ukp.inception.app:inception-imls-opennlp</usedDependency>
+              <usedDependency>de.tudarmstadt.ukp.inception.app:inception-coclass-linking</usedDependency>
               <usedDependency>de.tudarmstadt.ukp.inception.app:inception-imls-stringmatch</usedDependency>
               <usedDependency>de.tudarmstadt.ukp.inception.app:inception-example-imls-data-majority</usedDependency>
               <usedDependency>de.tudarmstadt.ukp.inception.app:inception-ui-kb</usedDependency>

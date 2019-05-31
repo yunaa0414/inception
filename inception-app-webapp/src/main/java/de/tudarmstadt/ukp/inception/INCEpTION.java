@@ -85,7 +85,9 @@ import de.tudarmstadt.ukp.inception.app.config.InceptionBanner;
                 AutomationTrainingDocumentExporter.class,
                 // INCEpTION uses the original DKPro Core CoNLL-U components
                 ConllUFormatSupport.class
-        })})
+        })},
+		basePackages = {"de.tudarmstadt.ukp.inception",
+						"se.bth.serl.inception"})
 @EntityScan(basePackages = {
         // Include WebAnno entity packages separately so we can skip the automation entities!
         "de.tudarmstadt.ukp.clarin.webanno.model",
