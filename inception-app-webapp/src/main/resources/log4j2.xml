@@ -39,7 +39,7 @@
 
   <Loggers>
     <Logger name="de.tudarmstadt" level="INFO"/>
-    <Logger name="se.bth" level="INFO"/>
+    <Logger name="se.bth" level="DEBUG"/>
     <Logger name="de.tudarmstadt.ukp.inception" level="INFO"/>
     <Logger name="org.apache.uima" level="ERROR"/>
     <Logger name="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" level="ERROR"/>

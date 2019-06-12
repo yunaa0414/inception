@@ -1,11 +1,10 @@
 package se.bth.serl.inception.coclasslinking.predictor;
 
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.CAS;
-import org.apache.uima.cas.CASException;
+import java.util.Map;
 
-import de.tudarmstadt.ukp.inception.recommendation.api.recommender.RecommenderContext;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+import se.bth.serl.inception.coclasslinking.recommender.CCObject;
 
 public interface IPredictor {
-	public void predict(RecommenderContext aContext, CAS aCas) throws AnalysisEngineProcessException, CASException; 
+	public Map<CCObject, Double> score(Token token); 
 }
