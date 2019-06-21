@@ -48,6 +48,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.wicket.util.file.File;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
+import org.deeplearning4j.models.word2vec.Word2Vec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,6 +80,8 @@ public class CoClassLinker implements RecommendationEngine {
 	public static final Key<Map<String,CCMapping>> KEY_MODEL = new Key<>("ccMapping");
 	private static final String LOOKUP_FILE = "coclass-lookup.bin";
 	private static final String W2V_FILE = "word2vec-sv.bin";
+	private static Map<String, List<CCObject>> coClassModel = null;
+	private static Word2Vec w2vModel = null;
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	private Recommender recommender;
 	private List<IPredictor> predictors;
@@ -92,10 +95,17 @@ public class CoClassLinker implements RecommendationEngine {
     		File modelPath = mP.get();
     		
     		try {
-    			Map<String, List<CCObject>> aCoClassModel = getCoClassLookupTable(modelPath, aKbService, aFsRegistry);
-    			predictors.add(new SimpleNounPredictor(aCoClassModel));
-        		predictors.add(new Word2VecPredictor(aCoClassModel, WordVectorSerializer.readWord2VecModel(modelPath.file(W2V_FILE))));
-        		predictors.add(new HistoryPredictor(aCoClassModel));
+    			if (coClassModel == null ) {
+    				coClassModel = getCoClassLookupTable(modelPath, aKbService, aFsRegistry);
+    			}
+    			
+    			if (w2vModel == null) {
+    				w2vModel = WordVectorSerializer.readWord2VecModel(modelPath.file(W2V_FILE));
+    			}
+    			
+    			predictors.add(new SimpleNounPredictor(coClassModel));
+        		predictors.add(new Word2VecPredictor(coClassModel, w2vModel));
+        		predictors.add(new HistoryPredictor(coClassModel));
     		} catch (RecommendationException e) {
     			log.error(e.getMessage(), e.getCause());
     		}
