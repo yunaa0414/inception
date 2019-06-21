@@ -1,39 +1,51 @@
+/*
+ * Copyright 2019
+ * Software Engineering Research Lab
+ * Blekinge Institute of Technology
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package se.bth.serl.inception.coclasslinking.predictor;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.wicket.util.file.File;
-
-import de.tudarmstadt.ukp.clarin.webanno.api.annotation.feature.FeatureSupportRegistry;
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
-import de.tudarmstadt.ukp.inception.kb.KnowledgeBaseService;
-import de.tudarmstadt.ukp.inception.recommendation.api.model.Recommender;
+import de.tudarmstadt.ukp.inception.recommendation.api.recommender.RecommenderContext;
 import se.bth.serl.inception.coclasslinking.recommender.CCObject;
+import se.bth.serl.inception.coclasslinking.recommender.Term;
 
+/**
+ * If the token is a noun, we look for CoClass objects that contain this noun. 
+ * The more frequent the noun in CoClass is, the lower the score.
+ */
 public class SimpleNounPredictor extends PredictorBase {
-	
-	
-	public SimpleNounPredictor(File aModelPath, Recommender aRecommender, KnowledgeBaseService aKbService, FeatureSupportRegistry aFsRegistry) {
-		super(aModelPath, aRecommender, aKbService, aFsRegistry);
+
+	public SimpleNounPredictor(Map<String, List<CCObject>> aCoClassModel) {
+		super(aCoClassModel);
 	}
 	
 	@Override
-	public Map<CCObject, Double> score(Token token) { 
-		Map<CCObject, Double> result = new HashMap<>();
+	public Map<String, Double> score(RecommenderContext aContext, Term aTerm) { 
+		Map<String, Double> result = new HashMap<>();
 		
-		String posV = token.getPosValue();
-		if (isNoun(posV)) {
-			List<CCObject> hits = lookupTable.get(token.getStemValue().toLowerCase());
-			if (hits != null) {
-				int numberOfHits = hits.size();
-				for (CCObject hit : hits) {
-					result.put(hit, new Double(1.0 / numberOfHits));
-				}
+		List<CCObject> hits = coClassModel.get(aTerm.getStem());
+		if (hits != null) {
+			int numberOfHits = hits.size();
+			for (CCObject hit : hits) {
+				result.put(hit.getIri(), new Double(1.0 / numberOfHits));
 			}
-			
-			logScore(token, result);
 		}
 		
 		return result;

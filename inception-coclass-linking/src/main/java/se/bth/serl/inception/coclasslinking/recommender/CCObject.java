@@ -1,3 +1,21 @@
+/*
+ * Copyright 2019
+ * Software Engineering Research Lab
+ * Blekinge Institute of Technology
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package se.bth.serl.inception.coclasslinking.recommender;
 
 import java.io.Serializable;
@@ -16,10 +34,12 @@ public class CCObject implements Serializable {
 	private String definition;
 	private List<String> synonyms;
 	private Set<String> nouns;
+	private Set<String> w2vSimilarWords;
 	
 	public CCObject() {
 		synonyms = new ArrayList<>();
 		nouns = new HashSet<>();
+		w2vSimilarWords = new HashSet<>();
 	}
 	
 	public String getIri() {
@@ -85,6 +105,14 @@ public class CCObject implements Serializable {
 	
 	public void printNouns() {
 		System.out.println(getText() + ": " + nouns.stream().collect(Collectors.joining(",")));
+	}
+	
+	public void addW2VSimilarWord(String word) {
+		this.w2vSimilarWords.add(word);
+	}
+	
+	public Set<String> getW2VSimilarWords() {
+		return this.w2vSimilarWords;
 	}
 	
 	public String getText() {
