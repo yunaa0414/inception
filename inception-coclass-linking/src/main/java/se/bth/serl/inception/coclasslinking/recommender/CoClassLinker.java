@@ -143,7 +143,7 @@ public class CoClassLinker implements RecommendationEngine {
 		} catch (AnalysisEngineProcessException e) {
 			throw new RecommendationException("Could not run analysis engine for prediction.", e);
 		} catch (CASException e) {
-			throw new RecommendationException("Could not iterate through tokes in prediction.", e);
+			throw new RecommendationException("Could not iterate through tokens in prediction.", e);
 		}
 	}
 	
@@ -162,7 +162,7 @@ public class CoClassLinker implements RecommendationEngine {
 		String path = System.getProperty(SettingsUtil.getPropApplicationHome());
 		if (path != null) {
 			modelPath = new File(path + "/models");
-			log.info("CoClass model path: {}", modelPath.getAbsolutePath());
+			log.debug("CoClass model path: {}", modelPath.getAbsolutePath());
 		} else {
 			log.error("Could not determine CoClass model path");
 		}
@@ -185,17 +185,6 @@ public class CoClassLinker implements RecommendationEngine {
 				});
 			}
 		}
-		
-		//TODO
-		// - check if results are actually ordered. When the default (3) are shown, they are ordered. If the default is changed in the recommender settings, while annotating, then the order is random.
-		// - do debug logging that shows the individual components of the total score. Log in console. MAYBE add info to UI.
-		
-		/*
-		 * Score components of coclass object:
-		 * - frequency of term in coclass. The more frequent a term (appears in more coclass objects), the lower the score: 1 / total_term_occurrences
-		 * - top X similar terms from word2vec and their score: (1 / total_similar_term_occurences) * similarity
-		 * If no term was found in coclass, decompound term and do the above scoring on the components.
-		 */
 		
 		return totalScore.entrySet().stream()
 				.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
