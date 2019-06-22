@@ -76,18 +76,18 @@ import se.bth.serl.inception.coclasslinking.predictor.SimpleNounPredictor;
 import se.bth.serl.inception.coclasslinking.predictor.Word2VecPredictor;
 import se.bth.serl.inception.coclasslinking.utils.NLP;
 
-public class CoClassLinker implements RecommendationEngine {
+public class CoClassLinker extends RecommendationEngine {
 	public static final Key<Map<String,CCMapping>> KEY_MODEL = new Key<>("ccMapping");
 	private static final String LOOKUP_FILE = "coclass-lookup.bin";
 	private static final String W2V_FILE = "word2vec-sv.bin";
 	private static Map<String, List<CCObject>> coClassModel = null;
 	private static Word2Vec w2vModel = null;
 	private final Logger log = LoggerFactory.getLogger(getClass());
-	private Recommender recommender;
 	private List<IPredictor> predictors;
     
     
     public CoClassLinker(Recommender aRecommender, KnowledgeBaseService aKbService, FeatureSupportRegistry aFsRegistry) {
+    	super(aRecommender);
     	predictors = new ArrayList<>();
     	
     	Optional<File> mP = getModelPath();
@@ -112,8 +112,6 @@ public class CoClassLinker implements RecommendationEngine {
     	} else {
     		log.error("Could not determine CoClass model path");
     	}
-    	    	
-    	recommender = aRecommender;
     }
 	
 	@Override
@@ -193,8 +191,8 @@ public class CoClassLinker implements RecommendationEngine {
 	}
 	
 	private Map<String,CCMapping> learn(List<CAS> aCasses) {
-		Type annotationType = CasUtil.getType(aCasses.get(0), recommender.getLayer().getName());
-	    Feature labelFeature = annotationType.getFeatureByBaseName(recommender.getFeature().getName());
+		Type annotationType = CasUtil.getType(aCasses.get(0), layerName);
+	    Feature labelFeature = annotationType.getFeatureByBaseName(featureName);
 	    
 	    Map<String, CCMapping> model = new HashMap<>();
 	    for (CAS cas : aCasses) {
