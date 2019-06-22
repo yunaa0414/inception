@@ -19,7 +19,6 @@
 package se.bth.serl.inception.coclasslinking.recommender;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.apache.uima.fit.util.CasUtil.getAnnotationType;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -69,7 +68,6 @@ import de.tudarmstadt.ukp.inception.recommendation.api.recommender.Recommendatio
 import de.tudarmstadt.ukp.inception.recommendation.api.recommender.RecommendationException;
 import de.tudarmstadt.ukp.inception.recommendation.api.recommender.RecommenderContext;
 import de.tudarmstadt.ukp.inception.recommendation.api.recommender.RecommenderContext.Key;
-import de.tudarmstadt.ukp.inception.recommendation.api.type.PredictedSpan;
 import se.bth.serl.inception.coclasslinking.predictor.HistoryPredictor;
 import se.bth.serl.inception.coclasslinking.predictor.IPredictor;
 import se.bth.serl.inception.coclasslinking.predictor.SimpleNounPredictor;
@@ -126,15 +124,17 @@ public class CoClassLinker extends RecommendationEngine {
 			aCas.setDocumentLanguage("sv");
 			SimplePipeline.runPipeline(aCas, NLP.baseAnalysisEngine());
 			
-			Type predictionType = getAnnotationType(aCas, PredictedSpan.class);
-			Feature labelFeature = predictionType.getFeatureByBaseName("label");
-			Feature confidenceFeature = predictionType.getFeatureByBaseName("score");
+			Type predictedType = getPredictedType(aCas);
+			Feature labelFeature = getPredictedFeature(aCas);
+			Feature confidenceFeature = getScoreFeature(aCas);
+			Feature isPredictionFeature = getIsPredictionFeature(aCas);
 			
 			for (Token token : JCasUtil.select(aCas.getJCas(), Token.class)) {
 				calculateScore(aContext, token).forEach((iri, score) -> {
-					AnnotationFS annotation = aCas.createAnnotation(predictionType, token.getBegin(), token.getEnd());
+					AnnotationFS annotation = aCas.createAnnotation(predictedType, token.getBegin(), token.getEnd());
 					annotation.setDoubleValue(confidenceFeature, score);
 					annotation.setStringValue(labelFeature, iri);
+					annotation.setBooleanValue(isPredictionFeature, true);
 					aCas.addFsToIndexes(annotation);
 				});
 			}	

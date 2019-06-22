@@ -95,12 +95,10 @@
     </dependency>
 
     <!-- INCEPTION - Example -->
-    <!--
     <dependency>
       <groupId>de.tudarmstadt.ukp.inception.app</groupId>
       <artifactId>inception-example-imls-data-majority</artifactId>
     </dependency>
-	!-->
     <dependency>
    	  <groupId>de.tudarmstadt.ukp.inception.app</groupId>
       <artifactId>inception-coclass-linking</artifactId>
