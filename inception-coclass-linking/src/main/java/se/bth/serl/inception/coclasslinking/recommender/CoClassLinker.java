@@ -130,13 +130,16 @@ public class CoClassLinker extends RecommendationEngine {
 			Feature isPredictionFeature = getIsPredictionFeature(aCas);
 			
 			for (Token token : JCasUtil.select(aCas.getJCas(), Token.class)) {
-				calculateScore(aContext, token).forEach((iri, score) -> {
-					AnnotationFS annotation = aCas.createAnnotation(predictedType, token.getBegin(), token.getEnd());
-					annotation.setDoubleValue(confidenceFeature, score);
-					annotation.setStringValue(labelFeature, iri);
-					annotation.setBooleanValue(isPredictionFeature, true);
-					aCas.addFsToIndexes(annotation);
-				});
+				Term term = new Term(token);
+				if (term.isNoun()) {
+					calculateScore(aContext, term).forEach((iri, score) -> {
+						AnnotationFS annotation = aCas.createAnnotation(predictedType, token.getBegin(), token.getEnd());
+						annotation.setDoubleValue(confidenceFeature, score);
+						annotation.setStringValue(labelFeature, iri);
+						annotation.setBooleanValue(isPredictionFeature, true);
+						aCas.addFsToIndexes(annotation);
+					});
+				}
 			}	
 		} catch (AnalysisEngineProcessException e) {
 			throw new RecommendationException("Could not run analysis engine for prediction.", e);
@@ -168,20 +171,17 @@ public class CoClassLinker extends RecommendationEngine {
 		return Optional.ofNullable(modelPath);
 	}
 	
-	private LinkedHashMap<String, Double> calculateScore(RecommenderContext aContext, Token aToken) {
+	private LinkedHashMap<String, Double> calculateScore(RecommenderContext aContext, Term aTerm) {
 		Map<String, Double> totalScore = new HashMap<>();
-		Term term = new Term(aToken);
 		
 		// Ensure that the total score is in the range [0..1]
 		double scalingFactor = 1.0 / predictors.size();
 		
-		if (term.isNoun()) {
-			for (IPredictor predictor : predictors) {
-				Map<String, Double> intermediateScore = predictor.score(aContext, term);
-				intermediateScore.forEach((key, value) -> {
-					totalScore.merge(key, value * scalingFactor, (score, increment) -> score += increment);
-				});
-			}
+		for (IPredictor predictor : predictors) {
+			Map<String, Double> intermediateScore = predictor.score(aContext, aTerm);
+			intermediateScore.forEach((key, value) -> {
+				totalScore.merge(key, value * scalingFactor, (score, increment) -> score += increment);
+			});
 		}
 		
 		return totalScore.entrySet().stream()
