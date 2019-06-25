@@ -75,7 +75,7 @@ import se.bth.serl.inception.coclasslinking.predictor.Word2VecPredictor;
 import se.bth.serl.inception.coclasslinking.utils.NLP;
 
 public class CoClassLinker extends RecommendationEngine {
-	public static final Key<Map<String,CCMapping>> KEY_MODEL = new Key<>("ccMapping");
+	public static final Key<Map<String,IriFrequency>> KEY_MODEL = new Key<>("ccMapping");
 	private static final String LOOKUP_FILE = "coclass-lookup.bin";
 	private static final String W2V_FILE = "word2vec-sv.bin";
 	private static Map<String, List<CCObject>> coClassModel = null;
@@ -121,12 +121,13 @@ public class CoClassLinker extends RecommendationEngine {
 	@Override
 	public void predict(RecommenderContext aContext, CAS aCas) throws RecommendationException {
 		try {
-			aCas.setDocumentLanguage("sv");
+	        aCas.setDocumentLanguage("sv");
 			SimplePipeline.runPipeline(aCas, NLP.baseAnalysisEngine());
 			
 			Type predictedType = getPredictedType(aCas);
 			Feature labelFeature = getPredictedFeature(aCas);
 			Feature confidenceFeature = getScoreFeature(aCas);
+			Feature confidenceExplanationFeature = getScoreExplanationFeature(aCas);
 			Feature isPredictionFeature = getIsPredictionFeature(aCas);
 			
 			for (Token token : JCasUtil.select(aCas.getJCas(), Token.class)) {
@@ -134,13 +135,14 @@ public class CoClassLinker extends RecommendationEngine {
 				if (term.isNoun()) {
 					calculateScore(aContext, term).forEach((iri, score) -> {
 						AnnotationFS annotation = aCas.createAnnotation(predictedType, token.getBegin(), token.getEnd());
-						annotation.setDoubleValue(confidenceFeature, score);
+						annotation.setDoubleValue(confidenceFeature, score.totalScore);
+						annotation.setStringValue(confidenceExplanationFeature, score.getExplanation());
 						annotation.setStringValue(labelFeature, iri);
 						annotation.setBooleanValue(isPredictionFeature, true);
 						aCas.addFsToIndexes(annotation);
 					});
 				}
-			}	
+			}
 		} catch (AnalysisEngineProcessException e) {
 			throw new RecommendationException("Could not run analysis engine for prediction.", e);
 		} catch (CASException e) {
@@ -171,8 +173,8 @@ public class CoClassLinker extends RecommendationEngine {
 		return Optional.ofNullable(modelPath);
 	}
 	
-	private LinkedHashMap<String, Double> calculateScore(RecommenderContext aContext, Term aTerm) {
-		Map<String, Double> totalScore = new HashMap<>();
+	private LinkedHashMap<String, Score> calculateScore(RecommenderContext aContext, Term aTerm) {
+		Map<String, Score> totalScore = new HashMap<>();
 		
 		// Ensure that the total score is in the range [0..1]
 		double scalingFactor = 1.0 / predictors.size();
@@ -180,33 +182,66 @@ public class CoClassLinker extends RecommendationEngine {
 		for (IPredictor predictor : predictors) {
 			Map<String, Double> intermediateScore = predictor.score(aContext, aTerm);
 			intermediateScore.forEach((key, value) -> {
-				totalScore.merge(key, value * scalingFactor, (score, increment) -> score += increment);
+				value = value * scalingFactor;
+				
+				if (totalScore.containsKey(key)) {
+					totalScore.get(key).add(predictor.getName(), value);
+				} else {
+					Score score = new Score();
+					score.add(predictor.getName(), value);
+					totalScore.put(key, score);
+				}
 			});
 		}
 		
 		return totalScore.entrySet().stream()
-				.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+				.sorted(Collections.reverseOrder(Map.Entry.comparingByValue( 
+						(e1, e2) -> e1.totalScore.compareTo(e2.totalScore))))
 				.limit(Long.MAX_VALUE) //TODO Retrieve from settings and then set here.
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+		
 	}
 	
-	private Map<String,CCMapping> learn(List<CAS> aCasses) {
+	private class Score {
+		private Map<String, Double> components;
+		private Double totalScore;
+		
+		public Score() {
+			components = new HashMap<>();
+			totalScore = new Double(0);
+		}
+		
+		public void add(String aPredictorName, Double aScore) {
+			components.put(aPredictorName, aScore);
+			totalScore += aScore;
+		}
+		
+		public String getExplanation() {
+			return components.entrySet().stream()
+				.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+				.map( e -> String.format("%s: %.2f", e.getKey(), e.getValue()))
+				.collect(Collectors.joining(" | "));
+					
+		}
+	}
+	
+	private Map<String,IriFrequency> learn(List<CAS> aCasses) {
 		Type annotationType = CasUtil.getType(aCasses.get(0), layerName);
 	    Feature labelFeature = annotationType.getFeatureByBaseName(featureName);
 	    
-	    Map<String, CCMapping> model = new HashMap<>();
+	    Map<String, IriFrequency> model = new HashMap<>();
 	    for (CAS cas : aCasses) {
 	    	for (AnnotationFS annotation : CasUtil.select(cas, annotationType)) {
 	    		String iri = annotation.getFeatureValueAsString(labelFeature);
                 if (isNotEmpty(iri)) {
                 	String term = annotation.getCoveredText().toLowerCase();
                 	
-                	CCMapping ccm = model.get(term);
-                	if (ccm != null) {
-                		ccm.addEntry(iri);
+                	IriFrequency iriFrequency = model.get(term);
+                	if (iriFrequency != null) {
+                		iriFrequency.addEntry(iri);
                 	} else {
-                		ccm = new CCMapping(term, iri);
-                		model.put(term, ccm);
+                		iriFrequency = new IriFrequency(iri);
+                		model.put(term, iriFrequency);
                 	}
                 }
 	    	}
@@ -312,12 +347,10 @@ public class CoClassLinker extends RecommendationEngine {
 		}
 	}
 	
-	public static class CCMapping {
-		private String term;
+	public static class IriFrequency {
 		private Map<String,Integer> iris;
 		
-		public CCMapping(String t, String iri) {
-			term = t;
+		public IriFrequency(String iri) {
 			iris = new HashMap<>();
 			addEntry(iri);
 		}

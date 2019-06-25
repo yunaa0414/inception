@@ -25,13 +25,18 @@ import java.util.Map;
 import de.tudarmstadt.ukp.inception.recommendation.api.recommender.RecommenderContext;
 import se.bth.serl.inception.coclasslinking.recommender.CCObject;
 import se.bth.serl.inception.coclasslinking.recommender.CoClassLinker;
-import se.bth.serl.inception.coclasslinking.recommender.CoClassLinker.CCMapping;
+import se.bth.serl.inception.coclasslinking.recommender.CoClassLinker.IriFrequency;
 import se.bth.serl.inception.coclasslinking.recommender.Term;
 
 public class HistoryPredictor extends PredictorBase {
 	
 	public HistoryPredictor(Map<String, List<CCObject>> aCoClassModel) {
 		super(aCoClassModel);
+	}
+	
+	@Override
+	public String getName() {
+		return "History predictor";
 	}
 
 	/**
@@ -42,9 +47,9 @@ public class HistoryPredictor extends PredictorBase {
 		Map<String, Double> result = new HashMap<>();
 		
 		aContext.get(CoClassLinker.KEY_MODEL).ifPresent((model) -> {
-			CCMapping mapping = model.get(aTerm.getTerm());
-			if (mapping != null) {
-				Map<String, Integer> iris = mapping.getEntries();
+			IriFrequency iriFrequency = model.get(aTerm.getTerm());
+			if (iriFrequency != null) {
+				Map<String, Integer> iris = iriFrequency.getEntries();
 				int numberOfHits = iris.size();
 				iris.forEach( (iri, annotationFrequency) -> {
 					/* 

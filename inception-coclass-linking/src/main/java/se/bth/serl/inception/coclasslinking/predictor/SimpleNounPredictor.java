@@ -37,6 +37,11 @@ public class SimpleNounPredictor extends PredictorBase {
 	}
 	
 	@Override
+	public String getName() {
+		return "Simple noun predictor";
+	}
+	
+	@Override
 	public Map<String, Double> score(RecommenderContext aContext, Term aTerm) { 
 		Map<String, Double> result = new HashMap<>();
 		

@@ -61,7 +61,7 @@ public class PredictionTask
 
         Predictions predictions = recommendationService.computePredictions(user, project, docs);
         
-        log.debug("[{}]: Prediction complete ({} ms)", user.getUsername(),
+        log.info("[{}]: Prediction complete ({} ms)", user.getUsername(),
                 (System.currentTimeMillis() - startTime));
 
         recommendationService.putIncomingPredictions(user, project, predictions);

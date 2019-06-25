@@ -31,6 +31,8 @@ import se.bth.serl.inception.coclasslinking.recommender.CCObject;
 import se.bth.serl.inception.coclasslinking.recommender.Term;
 
 public class Word2VecPredictor extends PredictorBase {
+	private static Map<String, Collection<String>> wordsNearestCache = null;
+	private static Map<String, Double> similarityCache = null;
 	private Word2Vec w2vModel;
 	private final int numSimilarWords = 10;
 	
@@ -50,7 +52,18 @@ public class Word2VecPredictor extends PredictorBase {
 	 */
 	public Word2VecPredictor(Map<String, List<CCObject>> aCoClassModel, Word2Vec aW2vModel) {
 		super(aCoClassModel);
+		if (wordsNearestCache == null) {
+			wordsNearestCache = new HashMap<>();
+		}
+		if (similarityCache == null) {
+			similarityCache = new HashMap<>();
+		}
 		w2vModel = aW2vModel;
+	}
+	
+	@Override
+	public String getName() {
+		return "Word2Vec predictor";
 	}
 	
 	@Override
@@ -58,7 +71,12 @@ public class Word2VecPredictor extends PredictorBase {
 		Map<String, Double> result = new HashMap<>();
 				
 		String word = aTerm.getTerm();
-		Collection<String> similarWords = w2vModel.wordsNearest(word, numSimilarWords);
+		
+		Collection<String> similarWords = wordsNearestCache.get(word);
+		if (similarWords == null) {
+			similarWords = w2vModel.wordsNearest(word, numSimilarWords);
+			wordsNearestCache.put(word, similarWords);
+		}
 			
 		Map<String, List<CCObject>> hits = new HashMap<>();
 		for (String similarWord : similarWords) {
@@ -84,9 +102,16 @@ public class Word2VecPredictor extends PredictorBase {
 					.stream()
 					.filter(p -> p.equals(hit))
 					.count() - 1; // substract 1 as list contains also the hit
-						
-				double newscore = 1.0 / numberOfHits * w2vModel.similarity(word, similarWord);
-				result.merge(hit.getIri(), newscore, (score, increment) -> score += increment);
+
+			
+				String simKey = word + similarWord;
+				Double newScore = similarityCache.get(simKey);
+				if (newScore == null) {
+					newScore = new Double(1.0 / numberOfHits * w2vModel.similarity(word, similarWord));
+					similarityCache.put(simKey, newScore);
+				}
+					
+				result.merge(hit.getIri(), newScore, (score, increment) -> score += increment);
 			}
 		});
 				
