@@ -99,10 +99,6 @@
       <groupId>de.tudarmstadt.ukp.inception.app</groupId>
       <artifactId>inception-example-imls-data-majority</artifactId>
     </dependency>
-    <dependency>
-   	  <groupId>de.tudarmstadt.ukp.inception.app</groupId>
-      <artifactId>inception-coclass-linking</artifactId>
-    </dependency>
     <!-- INCEPTION - ACTIVE LEARNING FUNCTIONALITY -->
     <dependency>
       <groupId>de.tudarmstadt.ukp.inception.app</groupId>
@@ -491,6 +487,10 @@
       <version>${javamelody.version}</version>
     </dependency>
     -->
+    <dependency>
+    	<groupId>de.tudarmstadt.ukp.inception.app</groupId>
+    	<artifactId>inception-coclass-linking</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
