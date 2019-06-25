@@ -133,14 +133,22 @@ public class CoClassLinker extends RecommendationEngine {
 			for (Token token : JCasUtil.select(aCas.getJCas(), Token.class)) {
 				Term term = new Term(token);
 				if (term.isNoun()) {
-					calculateScore(aContext, term).forEach((iri, score) -> {
+					Double previousScore = Double.MAX_VALUE;
+					Map<String, Score> result = calculateScore(aContext, term);
+					for (Map.Entry<String, Score> e : result.entrySet()) {
+						String iri = e.getKey();
+						Score score = e.getValue();
+						
+						assert(score.totalScore < previousScore);
+						previousScore = score.totalScore;
+						
 						AnnotationFS annotation = aCas.createAnnotation(predictedType, token.getBegin(), token.getEnd());
 						annotation.setDoubleValue(confidenceFeature, score.totalScore);
 						annotation.setStringValue(confidenceExplanationFeature, score.getExplanation());
 						annotation.setStringValue(labelFeature, iri);
 						annotation.setBooleanValue(isPredictionFeature, true);
 						aCas.addFsToIndexes(annotation);
-					});
+					}
 				}
 			}
 		} catch (AnalysisEngineProcessException e) {
@@ -197,7 +205,6 @@ public class CoClassLinker extends RecommendationEngine {
 		return totalScore.entrySet().stream()
 				.sorted(Collections.reverseOrder(Map.Entry.comparingByValue( 
 						(e1, e2) -> e1.totalScore.compareTo(e2.totalScore))))
-				.limit(Long.MAX_VALUE) //TODO Retrieve from settings and then set here.
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 		
 	}
