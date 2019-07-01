@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.tudarmstadt.ukp.inception.recommendation.api.LearningRecordService;
 import de.tudarmstadt.ukp.inception.recommendation.api.recommender.RecommenderContext;
 import se.bth.serl.inception.coclasslinking.recommender.CCObject;
 import se.bth.serl.inception.coclasslinking.recommender.CoClassLinker;
@@ -31,10 +32,13 @@ import se.bth.serl.inception.coclasslinking.recommender.Term;
 public class HistoryPredictor
     extends PredictorBase
 {
+    private LearningRecordService lrService;
 
-    public HistoryPredictor(Map<String, List<CCObject>> aCoClassModel)
+    public HistoryPredictor(Map<String, List<CCObject>> aCoClassModel,
+            LearningRecordService aLrService)
     {
         super(aCoClassModel);
+        lrService = aLrService;
     }
 
     @Override

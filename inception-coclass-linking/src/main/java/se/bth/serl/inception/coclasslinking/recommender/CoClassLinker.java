@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
 import de.tudarmstadt.ukp.clarin.webanno.api.annotation.feature.FeatureSupport;
 import de.tudarmstadt.ukp.clarin.webanno.api.annotation.feature.FeatureSupportRegistry;
 import de.tudarmstadt.ukp.clarin.webanno.model.AnnotationFeature;
+import de.tudarmstadt.ukp.clarin.webanno.security.UserDao;
 import de.tudarmstadt.ukp.clarin.webanno.support.SettingsUtil;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.inception.kb.ConceptFeatureTraits;
@@ -61,6 +62,7 @@ import de.tudarmstadt.ukp.inception.kb.KnowledgeBaseService;
 import de.tudarmstadt.ukp.inception.kb.graph.KBHandle;
 import de.tudarmstadt.ukp.inception.kb.graph.KBStatement;
 import de.tudarmstadt.ukp.inception.kb.model.KnowledgeBase;
+import de.tudarmstadt.ukp.inception.recommendation.api.LearningRecordService;
 import de.tudarmstadt.ukp.inception.recommendation.api.evaluation.DataSplitter;
 import de.tudarmstadt.ukp.inception.recommendation.api.evaluation.EvaluationResult;
 import de.tudarmstadt.ukp.inception.recommendation.api.model.Recommender;
@@ -68,7 +70,6 @@ import de.tudarmstadt.ukp.inception.recommendation.api.recommender.Recommendatio
 import de.tudarmstadt.ukp.inception.recommendation.api.recommender.RecommendationException;
 import de.tudarmstadt.ukp.inception.recommendation.api.recommender.RecommenderContext;
 import de.tudarmstadt.ukp.inception.recommendation.api.recommender.RecommenderContext.Key;
-import se.bth.serl.inception.coclasslinking.predictor.HistoryPredictor;
 import se.bth.serl.inception.coclasslinking.predictor.IPredictor;
 import se.bth.serl.inception.coclasslinking.predictor.SimpleNounPredictor;
 import se.bth.serl.inception.coclasslinking.predictor.Word2VecPredictor;
@@ -86,7 +87,8 @@ public class CoClassLinker
     private List<IPredictor> predictors;
 
     public CoClassLinker(Recommender aRecommender, KnowledgeBaseService aKbService,
-            FeatureSupportRegistry aFsRegistry)
+            FeatureSupportRegistry aFsRegistry, LearningRecordService aLrService,
+            UserDao aUserRegistry)
     {
         super(aRecommender);
         predictors = new ArrayList<>();
@@ -106,7 +108,8 @@ public class CoClassLinker
 
                 predictors.add(new SimpleNounPredictor(coClassModel));
                 predictors.add(new Word2VecPredictor(coClassModel, w2vModel));
-                predictors.add(new HistoryPredictor(coClassModel));
+                predictors.add(new HistoryPredictor(coClassModel, aLrService,
+                 aRecommender.getLayer(), aUserRegistry.getCurrentUser().getUsername()));
             }
             catch (RecommendationException e) {
                 log.error(e.getMessage(), e.getCause());

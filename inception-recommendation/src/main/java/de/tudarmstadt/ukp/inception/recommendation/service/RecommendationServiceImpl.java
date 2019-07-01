@@ -145,7 +145,7 @@ public class RecommendationServiceImpl
             SchedulingService aSchedulingService, AnnotationSchemaService aAnnoService,
             DocumentService aDocumentService, LearningRecordService aLearningRecordService)
     {
-        sessionRegistry = aSessionRegistry;
+        sessionRegistry = aSessionRegistry; 
         userRepository = aUserRepository;
         recommenderFactoryRegistry = aRecommenderFactoryRegistry;
         schedulingService = aSchedulingService;
