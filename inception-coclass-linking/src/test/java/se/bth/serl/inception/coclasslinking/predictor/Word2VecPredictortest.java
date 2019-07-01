@@ -38,44 +38,49 @@ import de.tudarmstadt.ukp.inception.recommendation.api.recommender.RecommenderCo
 import se.bth.serl.inception.coclasslinking.recommender.Term;
 import se.bth.serl.inception.coclasslinking.util.TestFixture;
 
-public class Word2VecPredictortest {
-	private static TestFixture fix;
-	private IPredictor predictor;
-	
-	@Mock
-	private RecommenderContext recommenderContext;
-	
-	@Mock
-	private Word2Vec w2vModel;
-	
-	@Rule public MockitoRule mockitoRule = MockitoJUnit.rule(); 
+public class Word2VecPredictortest
+{
+    private static TestFixture fix;
+    private IPredictor predictor;
 
-	@BeforeClass
-	public static void setup() {
-		fix = new TestFixture();
-	}
-	
-	@Before
-	public void createMocks() {
-		predictor = new Word2VecPredictor(fix.getCoClassModel(), w2vModel);
-		
-		when(w2vModel.wordsNearest(anyString(), anyInt())).thenAnswer(
-				i -> fix.getWordsNearest(i.getArgument(0), i.getArgument(1)));
-		
-		when(w2vModel.similarity(anyString(), anyString())).thenAnswer(
-				i -> fix.getSimilarity(i.getArgument(0), i.getArgument(1)));
-	}
-	
-	@Test
-	public void testScoreOfKnownTerms() {
-		for (int i = 0; i < 10000; i++) {
-			Term term = fix.getRandomKnownTerm();
-			
-			Map<String, Double> result = predictor.score(recommenderContext, term);
-			result.forEach( (k, v) -> {
-				assertTrue("score (" + v + ") should be larger than 0.0", v > 0.0);
-				assertTrue("score (" + v + ") should be smaller or equal to 1.0", v <= 1.0);
-			});
-		}
-	}
+    @Mock
+    private RecommenderContext recommenderContext;
+
+    @Mock
+    private Word2Vec w2vModel;
+
+    @Rule
+    public MockitoRule mockitoRule = MockitoJUnit.rule();
+
+    @BeforeClass
+    public static void setup()
+    {
+        fix = new TestFixture();
+    }
+
+    @Before
+    public void createMocks()
+    {
+        predictor = new Word2VecPredictor(fix.getCoClassModel(), w2vModel);
+
+        when(w2vModel.wordsNearest(anyString(), anyInt()))
+                .thenAnswer(i -> fix.getWordsNearest(i.getArgument(0), i.getArgument(1)));
+
+        when(w2vModel.similarity(anyString(), anyString()))
+                .thenAnswer(i -> fix.getSimilarity(i.getArgument(0), i.getArgument(1)));
+    }
+
+    @Test
+    public void testScoreOfKnownTerms()
+    {
+        for (int i = 0; i < 10000; i++) {
+            Term term = fix.getRandomKnownTerm();
+
+            Map<String, Double> result = predictor.score(recommenderContext, term);
+            result.forEach((k, v) -> {
+                assertTrue("score (" + v + ") should be larger than 0.0", v > 0.0);
+                assertTrue("score (" + v + ") should be smaller or equal to 1.0", v <= 1.0);
+            });
+        }
+    }
 }

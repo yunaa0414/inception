@@ -23,12 +23,13 @@ import java.util.Map;
 import de.tudarmstadt.ukp.inception.recommendation.api.recommender.RecommenderContext;
 import se.bth.serl.inception.coclasslinking.recommender.Term;
 
-public interface IPredictor {
-	public String getName();
-	
-	/**
-	 * Calculates a score for the given term. The returned score must be between 0 and 1.
-	 * Returns a map with the key being an IRI in the knowledge base and the value the calculated score. 
-	 */
-	public Map<String, Double> score(RecommenderContext aContext, Term aTerm); 
+public interface IPredictor
+{
+    public String getName();
+
+    /**
+     * Calculates a score for the given term. The returned score must be between 0 and 1. Returns a
+     * map with the key being an IRI in the knowledge base and the value the calculated score.
+     */
+    public Map<String, Double> score(RecommenderContext aContext, Term aTerm);
 }

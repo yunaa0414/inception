@@ -34,57 +34,64 @@ import de.tudarmstadt.ukp.inception.recommendation.api.recommender.RecommenderCo
 import se.bth.serl.inception.coclasslinking.recommender.Term;
 import se.bth.serl.inception.coclasslinking.util.TestFixture;
 
-public class SimpleNounPredictorTest {
-	private static TestFixture fix;
-	private static IPredictor predictor;
-	
-	@Mock
-	private RecommenderContext recommenderContext;
-	
-	@Rule public MockitoRule mockitoRule = MockitoJUnit.rule(); 
+public class SimpleNounPredictorTest
+{
+    private static TestFixture fix;
+    private static IPredictor predictor;
 
-	@BeforeClass
-	public static void setup() {
-		fix = new TestFixture();
-		predictor = new SimpleNounPredictor(fix.getCoClassModel());
-	}
-	
-	@Test
-	public void testScoreOfUnknownTerm() {
-		Term term = fix.generateUnknownTerm();
-		
-		Map<String, Double> result = predictor.score(recommenderContext, term);
-		assertEquals(0, result.size());
-	}
-	
-	@Test
-	public void testScoreOfEmptyTerm() {
-		Term term = new Term("");
-		
-		Map<String, Double> result = predictor.score(recommenderContext, term);
-		assertEquals(0, result.size());
-	}
-	
-	@Test
-	public void testScoreOfKnownTerm() {
-		Term term = fix.getRandomKnownTerm();
-		
-		Map<String, Double> result = predictor.score(recommenderContext, term);
-		assertTrue(result.size() > 0);
-		result.forEach( (k,v) -> {
-			assertTrue("score (" + v + ") should be larger than 0.0", v > 0.0);
-			assertTrue("score (" + v + ") should be smaller or equal to 1.0", v <= 1.0);
-		});
-	}
-	
-	@Test
-	public void testScoreOfUniqueTerm() {
-		Term term = fix.getUniqueTerm();
-		
-		Map<String, Double> result = predictor.score(recommenderContext, term);
-		assertEquals(1, result.size());
-		result.forEach( (k,v) -> {
-			assertEquals(1.0, v.doubleValue(), 0.0);
-		});
-	}
+    @Mock
+    private RecommenderContext recommenderContext;
+
+    @Rule
+    public MockitoRule mockitoRule = MockitoJUnit.rule();
+
+    @BeforeClass
+    public static void setup()
+    {
+        fix = new TestFixture();
+        predictor = new SimpleNounPredictor(fix.getCoClassModel());
+    }
+
+    @Test
+    public void testScoreOfUnknownTerm()
+    {
+        Term term = fix.generateUnknownTerm();
+
+        Map<String, Double> result = predictor.score(recommenderContext, term);
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    public void testScoreOfEmptyTerm()
+    {
+        Term term = new Term("");
+
+        Map<String, Double> result = predictor.score(recommenderContext, term);
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    public void testScoreOfKnownTerm()
+    {
+        Term term = fix.getRandomKnownTerm();
+
+        Map<String, Double> result = predictor.score(recommenderContext, term);
+        assertTrue(result.size() > 0);
+        result.forEach((k, v) -> {
+            assertTrue("score (" + v + ") should be larger than 0.0", v > 0.0);
+            assertTrue("score (" + v + ") should be smaller or equal to 1.0", v <= 1.0);
+        });
+    }
+
+    @Test
+    public void testScoreOfUniqueTerm()
+    {
+        Term term = fix.getUniqueTerm();
+
+        Map<String, Double> result = predictor.score(recommenderContext, term);
+        assertEquals(1, result.size());
+        result.forEach((k, v) -> {
+            assertEquals(1.0, v.doubleValue(), 0.0);
+        });
+    }
 }

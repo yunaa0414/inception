@@ -27,32 +27,37 @@ import se.bth.serl.inception.coclasslinking.recommender.CCObject;
 import se.bth.serl.inception.coclasslinking.recommender.Term;
 
 /**
- * If the token is a noun, we look for CoClass objects that contain this noun. 
- * The more frequent the noun in CoClass is, the lower the score.
+ * If the token is a noun, we look for CoClass objects that contain this noun. The more frequent the
+ * noun in CoClass is, the lower the score.
  */
-public class SimpleNounPredictor extends PredictorBase {
+public class SimpleNounPredictor
+    extends PredictorBase
+{
 
-	public SimpleNounPredictor(Map<String, List<CCObject>> aCoClassModel) {
-		super(aCoClassModel);
-	}
-	
-	@Override
-	public String getName() {
-		return "Simple noun predictor";
-	}
-	
-	@Override
-	public Map<String, Double> score(RecommenderContext aContext, Term aTerm) { 
-		Map<String, Double> result = new HashMap<>();
-		
-		List<CCObject> hits = coClassModel.get(aTerm.getStem());
-		if (hits != null) {
-			int numberOfHits = hits.size();
-			for (CCObject hit : hits) {
-				result.put(hit.getIri(), new Double(1.0 / numberOfHits));
-			}
-		}
-		
-		return result;
-	}
+    public SimpleNounPredictor(Map<String, List<CCObject>> aCoClassModel)
+    {
+        super(aCoClassModel);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "Simple noun predictor";
+    }
+
+    @Override
+    public Map<String, Double> score(RecommenderContext aContext, Term aTerm)
+    {
+        Map<String, Double> result = new HashMap<>();
+
+        List<CCObject> hits = coClassModel.get(aTerm.getStem());
+        if (hits != null) {
+            int numberOfHits = hits.size();
+            for (CCObject hit : hits) {
+                result.put(hit.getIri(), new Double(1.0 / numberOfHits));
+            }
+        }
+
+        return result;
+    }
 }

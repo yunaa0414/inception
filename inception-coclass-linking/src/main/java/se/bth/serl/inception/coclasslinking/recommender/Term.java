@@ -20,36 +20,43 @@ package se.bth.serl.inception.coclasslinking.recommender;
 
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 
-public class Term {
-	private String term;
-	private String stem;
-	private String posValue;
-	
-	public Term(Token aToken) {
-		term = aToken.getText();
-		stem = aToken.getStemValue();
-		posValue = aToken.getPosValue();
-	}
-	
-	public Term(String aText) {
-		term = aText;
-		stem = aText;
-		posValue = "";
-	}
-	
-	public String getTerm() {
-		return term.toLowerCase();
-	}
-	
-	public String getStem() {
-		return stem.toLowerCase();
-	}
-	
-	/*
-	 * Identifiers are from Talbanken76, which is used by the OpenNLP POS tagger
-	 * https://cl.lingfil.uu.se/~nivre/research/Talbanken05.html
-	 */
-	public boolean isNoun() {
-		return posValue.equals("PN") || posValue.equals("MN") || posValue.equals("AN") || posValue.equals("VN") || posValue.equals("NN");
-	}
+public class Term
+{
+    private String term;
+    private String stem;
+    private String posValue;
+
+    public Term(Token aToken)
+    {
+        term = aToken.getText();
+        stem = aToken.getStemValue();
+        posValue = aToken.getPosValue();
+    }
+
+    public Term(String aText)
+    {
+        term = aText;
+        stem = aText;
+        posValue = "";
+    }
+
+    public String getTerm()
+    {
+        return term.toLowerCase();
+    }
+
+    public String getStem()
+    {
+        return stem.toLowerCase();
+    }
+
+    /*
+     * Identifiers are from Talbanken76, which is used by the OpenNLP POS tagger
+     * https://cl.lingfil.uu.se/~nivre/research/Talbanken05.html
+     */
+    public boolean isNoun()
+    {
+        return posValue.equals("PN") || posValue.equals("MN") || posValue.equals("AN")
+                || posValue.equals("VN") || posValue.equals("NN");
+    }
 }

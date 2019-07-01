@@ -29,26 +29,30 @@ import org.slf4j.LoggerFactory;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import se.bth.serl.inception.coclasslinking.recommender.CCObject;
 
-public abstract class PredictorBase implements IPredictor {
-	protected final Logger log = LoggerFactory.getLogger(getClass());
-	protected Map<String, List<CCObject>> coClassModel;
-	
-	public PredictorBase(Map<String, List<CCObject>> aCoClassModel) {
-		coClassModel = aCoClassModel;
-	}
-	
-	protected void logScore(Token token, Map<CCObject, Double> result) {
-		StringBuffer msg = new StringBuffer();
-		msg.append("Term: " + token.getText().toLowerCase());
-		result.forEach((k,v) -> {
-			msg.append(" / " + k.getName());
-			Set<String> similarWords = k.getW2VSimilarWords(); 
-			if (similarWords.size() > 0) {
-				msg.append(similarWords.stream().collect(Collectors.joining(",", " [", "]")));
-			}
-			msg.append(" (" + v + ") ");
-		});
-		
-		log.debug(msg.toString());
-	}
+public abstract class PredictorBase
+    implements IPredictor
+{
+    protected final Logger log = LoggerFactory.getLogger(getClass());
+    protected Map<String, List<CCObject>> coClassModel;
+
+    public PredictorBase(Map<String, List<CCObject>> aCoClassModel)
+    {
+        coClassModel = aCoClassModel;
+    }
+
+    protected void logScore(Token token, Map<CCObject, Double> result)
+    {
+        StringBuffer msg = new StringBuffer();
+        msg.append("Term: " + token.getText().toLowerCase());
+        result.forEach((k, v) -> {
+            msg.append(" / " + k.getName());
+            Set<String> similarWords = k.getW2VSimilarWords();
+            if (similarWords.size() > 0) {
+                msg.append(similarWords.stream().collect(Collectors.joining(",", " [", "]")));
+            }
+            msg.append(" (" + v + ") ");
+        });
+
+        log.debug(msg.toString());
+    }
 }

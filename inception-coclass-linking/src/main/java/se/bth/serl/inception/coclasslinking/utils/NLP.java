@@ -29,22 +29,25 @@ import de.tudarmstadt.ukp.dkpro.core.opennlp.OpenNlpSegmenter;
 import de.tudarmstadt.ukp.dkpro.core.snowball.SnowballStemmer;
 import de.tudarmstadt.ukp.inception.recommendation.api.recommender.RecommendationException;
 
-public class NLP {
-	private static AnalysisEngine aEngine = null;
-	
-	public static AnalysisEngine baseAnalysisEngine() throws RecommendationException {
-		if (aEngine == null) {
-			try {
-				AggregateBuilder builder = new AggregateBuilder();
-				builder.add(createEngineDescription(OpenNlpSegmenter.class));
-				builder.add(createEngineDescription(OpenNlpPosTagger.class));
-				builder.add(createEngineDescription(SnowballStemmer.class));
-				aEngine = builder.createAggregate();
-			} catch (ResourceInitializationException e) {
-				throw new RecommendationException("Could not create analysis engine.", e);
-			}
-		}
-		
-		return aEngine;
-	}
+public class NLP
+{
+    private static AnalysisEngine aEngine = null;
+
+    public static AnalysisEngine baseAnalysisEngine() throws RecommendationException
+    {
+        if (aEngine == null) {
+            try {
+                AggregateBuilder builder = new AggregateBuilder();
+                builder.add(createEngineDescription(OpenNlpSegmenter.class));
+                builder.add(createEngineDescription(OpenNlpPosTagger.class));
+                builder.add(createEngineDescription(SnowballStemmer.class));
+                aEngine = builder.createAggregate();
+            }
+            catch (ResourceInitializationException e) {
+                throw new RecommendationException("Could not create analysis engine.", e);
+            }
+        }
+
+        return aEngine;
+    }
 }

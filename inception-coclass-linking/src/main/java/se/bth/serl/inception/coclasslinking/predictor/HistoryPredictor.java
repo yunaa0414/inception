@@ -28,47 +28,52 @@ import se.bth.serl.inception.coclasslinking.recommender.CoClassLinker;
 import se.bth.serl.inception.coclasslinking.recommender.CoClassLinker.IriFrequency;
 import se.bth.serl.inception.coclasslinking.recommender.Term;
 
-public class HistoryPredictor extends PredictorBase {
-	
-	public HistoryPredictor(Map<String, List<CCObject>> aCoClassModel) {
-		super(aCoClassModel);
-	}
-	
-	@Override
-	public String getName() {
-		return "History predictor";
-	}
+public class HistoryPredictor
+    extends PredictorBase
+{
 
-	/**
-	 * Scores are calculated by the frequency a term has been equally and differently annotated annotated 
-	 */
-	@Override
-	public Map<String, Double> score(RecommenderContext aContext, Term aTerm) {
-		Map<String, Double> result = new HashMap<>();
-		
-		aContext.get(CoClassLinker.KEY_MODEL).ifPresent((model) -> {
-			IriFrequency iriFrequency = model.get(aTerm.getTerm());
-			if (iriFrequency != null) {
-				Map<String, Integer> iris = iriFrequency.getEntries();
-				int numberOfHits = iris.size();
-				iris.forEach( (iri, annotationFrequency) -> {
-					/* 
-					 * The score is the number of equally annotated terms (annotationFrequency) divided
-					 * by the frequency the term has been annotated overall (numberOfHits):
-					 * score = annotationFrequency / numberOfHits
-					 * 
-					 * However, we want a score between 0 and 1. Hence the following scaling:
-					 * score = annotationFrequency / (numberOfHits * annotationFrequency)
-					 * 
-					 * This simplifies to:
-					 * score = 1.0 / numberOfHits
-					 */
-					
-					result.put(iri, 1.0 / numberOfHits);
-				});
-			}
-		});
-		
-		return result;
-	}
+    public HistoryPredictor(Map<String, List<CCObject>> aCoClassModel)
+    {
+        super(aCoClassModel);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "History predictor";
+    }
+
+    /**
+     * Scores are calculated by the frequency a term has been equally and differently annotated
+     * annotated
+     */
+    @Override
+    public Map<String, Double> score(RecommenderContext aContext, Term aTerm)
+    {
+        Map<String, Double> result = new HashMap<>();
+
+        aContext.get(CoClassLinker.KEY_MODEL).ifPresent((model) -> {
+            IriFrequency iriFrequency = model.get(aTerm.getTerm());
+            if (iriFrequency != null) {
+                Map<String, Integer> iris = iriFrequency.getEntries();
+                int numberOfHits = iris.size();
+                iris.forEach((iri, annotationFrequency) -> {
+                    /*
+                     * The score is the number of equally annotated terms (annotationFrequency)
+                     * divided by the frequency the term has been annotated overall (numberOfHits):
+                     * score = annotationFrequency / numberOfHits
+                     * 
+                     * However, we want a score between 0 and 1. Hence the following scaling: score
+                     * = annotationFrequency / (numberOfHits * annotationFrequency)
+                     * 
+                     * This simplifies to: score = 1.0 / numberOfHits
+                     */
+
+                    result.put(iri, 1.0 / numberOfHits);
+                });
+            }
+        });
+
+        return result;
+    }
 }

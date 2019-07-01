@@ -36,39 +36,46 @@ import de.tudarmstadt.ukp.inception.recommendation.api.recommender.Recommendatio
 import de.tudarmstadt.ukp.inception.recommendation.api.recommender.RecommendationEngineFactoryImplBase;
 
 @Component
-public class CoClassLinkerFactory extends RecommendationEngineFactoryImplBase<Void> {
-	public static final String ID = "se.bth.serl.inception.coclasslinking.recommender.coclassrecommender";
-	
-	private @Autowired KnowledgeBaseService kbService;
-	private @Autowired FeatureSupportRegistry fsRegistry;
-	
-	@Override
-	public String getId() {
-		return ID;
-	}
+public class CoClassLinkerFactory
+    extends RecommendationEngineFactoryImplBase<Void>
+{
+    public static final String ID = "se.bth.serl.inception.coclasslinking.recommender.coclassrecommender";
 
-	@Override
-	public String getName() {
-		return "CoClass Recommender";
-	}
+    private @Autowired KnowledgeBaseService kbService;
+    private @Autowired FeatureSupportRegistry fsRegistry;
 
-	@Override
-	public RecommendationEngine build(Recommender aRecommender) {
-		return new CoClassLinker(aRecommender, kbService, fsRegistry);
-	}
+    @Override
+    public String getId()
+    {
+        return ID;
+    }
 
-	@Override
-	public boolean accepts(AnnotationLayer aLayer, AnnotationFeature aFeature) {
-		if (aLayer == null || aFeature == null) {
+    @Override
+    public String getName()
+    {
+        return "CoClass Recommender";
+    }
+
+    @Override
+    public RecommendationEngine build(Recommender aRecommender)
+    {
+        return new CoClassLinker(aRecommender, kbService, fsRegistry);
+    }
+
+    @Override
+    public boolean accepts(AnnotationLayer aLayer, AnnotationFeature aFeature)
+    {
+        if (aLayer == null || aFeature == null) {
             return false;
         }
         return asList(SINGLE_TOKEN, TOKENS).contains(aLayer.getAnchoringMode())
-            && !aLayer.isCrossSentence() && SPAN_TYPE.equals(aLayer.getType())
-            && CAS.TYPE_NAME_STRING.equals(aFeature.getType()) || aFeature.isVirtualFeature();
-	}
+                && !aLayer.isCrossSentence() && SPAN_TYPE.equals(aLayer.getType())
+                && CAS.TYPE_NAME_STRING.equals(aFeature.getType()) || aFeature.isVirtualFeature();
+    }
 
-	@Override
-    public boolean isEvaluable() {
+    @Override
+    public boolean isEvaluable()
+    {
         return false;
     }
 }
