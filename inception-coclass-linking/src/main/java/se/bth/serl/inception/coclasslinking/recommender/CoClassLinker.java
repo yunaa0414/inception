@@ -86,12 +86,14 @@ public class CoClassLinker
     private static Word2Vec w2vModel = null;
     private final Logger log = LoggerFactory.getLogger(getClass());
     private List<IPredictor> predictors;
+    private CoClassLinkerTraits linkerTraits;
 
-    public CoClassLinker(Recommender aRecommender, KnowledgeBaseService aKbService,
-            FeatureSupportRegistry aFsRegistry, LearningRecordService aLrService,
-            UserDao aUserRegistry)
+    public CoClassLinker(Recommender aRecommender, CoClassLinkerTraits aTraits, 
+            KnowledgeBaseService aKbService, FeatureSupportRegistry aFsRegistry, 
+            LearningRecordService aLrService, UserDao aUserRegistry)
     {
         super(aRecommender);
+        linkerTraits = aTraits;
         predictors = new ArrayList<>();
 
         Optional<File> mP = getModelPath();
@@ -111,7 +113,7 @@ public class CoClassLinker
                 predictors.add(new Word2VecPredictor(coClassModel, w2vModel));
                 predictors.add(new HistoryPredictor(coClassModel, 
                         aLrService.listRecords("admin", //aUserRegistry.getCurrentUser().getUsername(), 
-                                aRecommender.getLayer())));
+                                aRecommender.getLayer()), linkerTraits.getMaxRejects()));
                         
             }
             catch (RecommendationException e) {
@@ -256,7 +258,7 @@ public class CoClassLinker
         }
         
         public boolean ignore() {
-            return totalScore.equals(Double.NEGATIVE_INFINITY);
+            return totalScore < linkerTraits.getMinConfidence();
         }
 
         public String getExplanation()

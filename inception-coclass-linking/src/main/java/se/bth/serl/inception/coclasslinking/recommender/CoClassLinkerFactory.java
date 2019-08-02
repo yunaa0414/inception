@@ -24,6 +24,7 @@ import static de.tudarmstadt.ukp.clarin.webanno.model.AnchoringMode.TOKENS;
 import static java.util.Arrays.asList;
 
 import org.apache.uima.cas.CAS;
+import org.apache.wicket.model.IModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +40,7 @@ import de.tudarmstadt.ukp.inception.recommendation.api.recommender.Recommendatio
 
 @Component
 public class CoClassLinkerFactory
-    extends RecommendationEngineFactoryImplBase<Void>
+    extends RecommendationEngineFactoryImplBase<CoClassLinkerTraits>
 {
     public static final String ID = "se.bth.serl.inception.coclasslinking.recommender.coclassrecommender";
 
@@ -63,7 +64,8 @@ public class CoClassLinkerFactory
     @Override
     public RecommendationEngine build(Recommender aRecommender)
     {
-        return new CoClassLinker(aRecommender, kbService, fsRegistry, lrService, userRegistry);
+        return new CoClassLinker(aRecommender, readTraits(aRecommender), kbService, fsRegistry, 
+                lrService, userRegistry);
     }
 
     @Override
@@ -75,6 +77,18 @@ public class CoClassLinkerFactory
         return asList(SINGLE_TOKEN, TOKENS).contains(aLayer.getAnchoringMode())
                 && !aLayer.isCrossSentence() && SPAN_TYPE.equals(aLayer.getType())
                 && CAS.TYPE_NAME_STRING.equals(aFeature.getType()) || aFeature.isVirtualFeature();
+    }
+    
+    @Override
+    public CoClassLinkerTraits createTraits() 
+    {
+        return new CoClassLinkerTraits();
+    }
+    
+    @Override
+    public org.apache.wicket.Component createTraitsEditor(String aId, IModel<Recommender> aModel)
+    {
+        return new CoClassLinkerTraitsEditor(aId, aModel);
     }
 
     @Override

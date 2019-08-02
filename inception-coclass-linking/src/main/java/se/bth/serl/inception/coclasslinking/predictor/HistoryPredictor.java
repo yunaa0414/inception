@@ -34,13 +34,15 @@ import se.bth.serl.inception.coclasslinking.recommender.Term;
 public class HistoryPredictor
     extends PredictorBase
 {
-    private static final int MAXIMUM_REJECTS = 3;
+    private int maximumRejects;
     private List<LearningRecord> learnedRecords;
 
-    public HistoryPredictor(Map<String, List<CCObject>> aCoClassModel, List<LearningRecord> aList)
+    public HistoryPredictor(Map<String, List<CCObject>> aCoClassModel, List<LearningRecord> aList, 
+            int aMaximumRejects)
     {
         super(aCoClassModel);
         learnedRecords = aList;
+        maximumRejects = aMaximumRejects;
     }
 
     @Override
@@ -73,7 +75,7 @@ public class HistoryPredictor
                 .collect(Collectors.groupingBy(LearningRecord::getAnnotation, 
                         Collectors.counting()))
                 .entrySet().stream()
-                .filter(r -> r.getValue() >= MAXIMUM_REJECTS)
+                .filter(r -> r.getValue() >= maximumRejects)
                 .forEach(r -> result.put(r.getKey(), Double.NEGATIVE_INFINITY));
         
         aContext.get(CoClassLinker.KEY_MODEL).ifPresent((model) -> {
