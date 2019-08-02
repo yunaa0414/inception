@@ -62,21 +62,23 @@ public class HistoryPredictor
     {
         Map<String, Double> result = new HashMap<>();
         
-        /* 
+        /* If there is a limit set for the maximum of rejects:
          * - find learned records with the given term
          * - select the rejected ones
          * - group them by IRI and count them
          * - keep only entries with a count higher or equal to MAXIMUM_REJECTS
          * - add those IRIs to the result with a score of NEGATIVE_INFINITY
          */
-        learnedRecords.stream()
+        if (maximumRejects > 0) {
+            learnedRecords.stream()
                 .filter(r -> r.getTokenText().toLowerCase().equals(aTerm.getTerm()) && 
-                        r.getUserAction().equals(LearningRecordType.REJECTED))
+                    r.getUserAction().equals(LearningRecordType.REJECTED))
                 .collect(Collectors.groupingBy(LearningRecord::getAnnotation, 
-                        Collectors.counting()))
+                    Collectors.counting()))
                 .entrySet().stream()
                 .filter(r -> r.getValue() >= maximumRejects)
                 .forEach(r -> result.put(r.getKey(), Double.NEGATIVE_INFINITY));
+        }
         
         aContext.get(CoClassLinker.KEY_MODEL).ifPresent((model) -> {
             IriFrequency iriFrequency = model.get(aTerm.getTerm());
