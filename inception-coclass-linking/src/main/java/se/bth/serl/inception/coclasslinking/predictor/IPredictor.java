@@ -28,7 +28,9 @@ public interface IPredictor
     public String getName();
 
     /**
-     * Calculates a score for the given term. The returned score must be between 0 and 1. Returns a
+     * Calculates a score for the given term. The returned score must be between 0 and 1. 
+     * An exception is if the predictor wants to indicate that the suggestion should be removed
+     * altogether. Then the predictor can set a score of Double.NEGATIVE_INFINITY. Returns a
      * map with the key being an IRI in the knowledge base and the value the calculated score.
      */
     public Map<String, Double> score(RecommenderContext aContext, Term aTerm);

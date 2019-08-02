@@ -21,8 +21,10 @@ package se.bth.serl.inception.coclasslinking.predictor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import de.tudarmstadt.ukp.inception.recommendation.api.LearningRecordService;
+import de.tudarmstadt.ukp.inception.recommendation.api.model.LearningRecord;
+import de.tudarmstadt.ukp.inception.recommendation.api.model.LearningRecordType;
 import de.tudarmstadt.ukp.inception.recommendation.api.recommender.RecommenderContext;
 import se.bth.serl.inception.coclasslinking.recommender.CCObject;
 import se.bth.serl.inception.coclasslinking.recommender.CoClassLinker;
@@ -32,13 +34,13 @@ import se.bth.serl.inception.coclasslinking.recommender.Term;
 public class HistoryPredictor
     extends PredictorBase
 {
-    private LearningRecordService lrService;
+    private static final int MAXIMUM_REJECTS = 3;
+    private List<LearningRecord> learnedRecords;
 
-    public HistoryPredictor(Map<String, List<CCObject>> aCoClassModel,
-            LearningRecordService aLrService)
+    public HistoryPredictor(Map<String, List<CCObject>> aCoClassModel, List<LearningRecord> aList)
     {
         super(aCoClassModel);
-        lrService = aLrService;
+        learnedRecords = aList;
     }
 
     @Override
@@ -48,14 +50,32 @@ public class HistoryPredictor
     }
 
     /**
-     * Scores are calculated by the frequency a term has been equally and differently annotated
-     * annotated
+     * The score for an IRI is NEGATIVE_INFINITY if the suggestion has been rejected equal or more 
+     * than MAXIMUM_REJECTS.
+     * However, if a suggestion has been accepted at least once (i.e. it is in the model),
+     * the score is calculated by the frequency a term has been equally and differently annotated.
      */
     @Override
     public Map<String, Double> score(RecommenderContext aContext, Term aTerm)
     {
         Map<String, Double> result = new HashMap<>();
-
+        
+        /* 
+         * - find learned records with the given term
+         * - select the rejected ones
+         * - group them by IRI and count them
+         * - keep only entries with a count higher or equal to MAXIMUM_REJECTS
+         * - add those IRIs to the result with a score of NEGATIVE_INFINITY
+         */
+        learnedRecords.stream()
+                .filter(r -> r.getTokenText().toLowerCase().equals(aTerm.getTerm()) && 
+                        r.getUserAction().equals(LearningRecordType.REJECTED))
+                .collect(Collectors.groupingBy(LearningRecord::getAnnotation, 
+                        Collectors.counting()))
+                .entrySet().stream()
+                .filter(r -> r.getValue() >= MAXIMUM_REJECTS)
+                .forEach(r -> result.put(r.getKey(), Double.NEGATIVE_INFINITY));
+        
         aContext.get(CoClassLinker.KEY_MODEL).ifPresent((model) -> {
             IriFrequency iriFrequency = model.get(aTerm.getTerm());
             if (iriFrequency != null) {
@@ -64,16 +84,18 @@ public class HistoryPredictor
                 iris.forEach((iri, annotationFrequency) -> {
                     /*
                      * The score is the number of equally annotated terms (annotationFrequency)
-                     * divided by the frequency the term has been annotated overall (numberOfHits):
+                     * divided by the frequency the term has been annotated overall 
+                     * (numberOfHits):
                      * score = annotationFrequency / numberOfHits
                      * 
-                     * However, we want a score between 0 and 1. Hence the following scaling: score
-                     * = annotationFrequency / (numberOfHits * annotationFrequency)
+                     * However, we want a score between 0 and 1. Hence the following scaling: 
+                     * score = annotationFrequency / (numberOfHits * annotationFrequency)
                      * 
                      * This simplifies to: score = 1.0 / numberOfHits
                      */
 
                     result.put(iri, 1.0 / numberOfHits);
+                    
                 });
             }
         });

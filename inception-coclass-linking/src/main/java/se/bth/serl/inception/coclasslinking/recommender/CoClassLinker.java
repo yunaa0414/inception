@@ -70,6 +70,7 @@ import de.tudarmstadt.ukp.inception.recommendation.api.recommender.Recommendatio
 import de.tudarmstadt.ukp.inception.recommendation.api.recommender.RecommendationException;
 import de.tudarmstadt.ukp.inception.recommendation.api.recommender.RecommenderContext;
 import de.tudarmstadt.ukp.inception.recommendation.api.recommender.RecommenderContext.Key;
+import se.bth.serl.inception.coclasslinking.predictor.HistoryPredictor;
 import se.bth.serl.inception.coclasslinking.predictor.IPredictor;
 import se.bth.serl.inception.coclasslinking.predictor.SimpleNounPredictor;
 import se.bth.serl.inception.coclasslinking.predictor.Word2VecPredictor;
@@ -108,8 +109,10 @@ public class CoClassLinker
 
                 predictors.add(new SimpleNounPredictor(coClassModel));
                 predictors.add(new Word2VecPredictor(coClassModel, w2vModel));
-                predictors.add(new HistoryPredictor(coClassModel, aLrService,
-                 aRecommender.getLayer(), aUserRegistry.getCurrentUser().getUsername()));
+                predictors.add(new HistoryPredictor(coClassModel, 
+                        aLrService.listRecords("admin", //aUserRegistry.getCurrentUser().getUsername(), 
+                                aRecommender.getLayer())));
+                        
             }
             catch (RecommendationException e) {
                 log.error(e.getMessage(), e.getCause());
@@ -149,17 +152,21 @@ public class CoClassLinker
                         String iri = e.getKey();
                         Score score = e.getValue();
 
-                        assert (score.totalScore < previousScore);
-                        previousScore = score.totalScore;
+                        if (!score.ignore()) {
+                            // checking that results are sorted in decreasing order
+                            assert (score.totalScore < previousScore);
+                            previousScore = score.totalScore;
 
-                        AnnotationFS annotation = aCas.createAnnotation(predictedType,
-                                token.getBegin(), token.getEnd());
-                        annotation.setDoubleValue(confidenceFeature, score.totalScore);
-                        annotation.setStringValue(confidenceExplanationFeature,
-                                score.getExplanation());
-                        annotation.setStringValue(labelFeature, iri);
-                        annotation.setBooleanValue(isPredictionFeature, true);
-                        aCas.addFsToIndexes(annotation);
+                            AnnotationFS annotation = aCas.createAnnotation(predictedType,
+                                    token.getBegin(), token.getEnd());
+                            annotation.setDoubleValue(confidenceFeature, score.totalScore);
+                            annotation.setStringValue(confidenceExplanationFeature,
+                                    score.getExplanation());
+                            annotation.setStringValue(labelFeature, iri);
+                            annotation.setBooleanValue(isPredictionFeature, true);
+                            aCas.addFsToIndexes(annotation);
+ 
+                        }
                     }
                 }
             }
@@ -246,6 +253,10 @@ public class CoClassLinker
         {
             components.put(aPredictorName, aScore);
             totalScore += aScore;
+        }
+        
+        public boolean ignore() {
+            return totalScore.equals(Double.NEGATIVE_INFINITY);
         }
 
         public String getExplanation()
