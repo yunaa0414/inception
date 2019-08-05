@@ -165,6 +165,8 @@ public class RecommendationSpanRenderer
             }
             
             // Sort and filter labels under threshold value
+            // Note: the order in which annotations are rendered is only indicative to the 
+            // frontend (e.g. brat) which may choose to re-order them (e.g. for layout reasons).
             List<LabelMapKey> sortedAndfiltered = maxConfidencePerLabel.entrySet().stream()
                     .sorted((e1, e2) -> Double.compare(e2.getValue(), e1.getValue()))
                     .limit(pref.getMaxPredictions())
@@ -215,8 +217,8 @@ public class RecommendationSpanRenderer
                                 String.format("Confidence: %.2f", ao.getConfidence())));
                     }
                     if (ao.getConfidenceExplanation().isPresent()) {
-                    	vdoc.add(new VComment(vid, VCommentType.INFO,
-                    			"Explanation: " + ao.getConfidenceExplanation().get()));
+                        vdoc.add(new VComment(vid, VCommentType.INFO,
+                                "Explanation: " + ao.getConfidenceExplanation().get()));
                     }
                     if (pref.isShowAllPredictions() && !ao.isVisible()) {
                         vdoc.add(new VComment(vid, VCommentType.INFO,
