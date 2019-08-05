@@ -26,10 +26,13 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
+import de.tudarmstadt.ukp.clarin.webanno.security.model.User;
 import de.tudarmstadt.ukp.clarin.webanno.support.logging.LogMessage;
 
 public class RecommenderContext
 {
+    public static final Key<User> KEY_USER = new Key<>("user");
+    
     /**
      * Empty context which starts out being closed.
      */
