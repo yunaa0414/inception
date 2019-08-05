@@ -21,6 +21,7 @@ package se.bth.serl.inception.coclasslinking.predictor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import de.tudarmstadt.ukp.clarin.webanno.model.AnnotationLayer;
@@ -119,9 +120,9 @@ public class HistoryPredictor
     }
     
     private void retrieveLearnedRecords(RecommenderContext ctx) {
-        User user = ctx.getUser();
-        if (user != null) {
-            learnedRecords = lrService.listRecords(ctx.getUser().getUsername(), annLayer);
+        Optional<User> user = ctx.getUser();
+        if (user.isPresent()) {
+            learnedRecords = lrService.listRecords(user.get().getUsername(), annLayer);
         }
     }
 }
