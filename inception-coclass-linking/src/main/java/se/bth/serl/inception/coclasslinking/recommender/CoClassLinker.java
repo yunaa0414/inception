@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -129,7 +130,6 @@ public class CoClassLinker
     public void train(RecommenderContext aContext, List<CAS> aCasses) throws RecommendationException
     {
         aContext.put(KEY_MODEL, learn(aCasses));
-        aContext.markAsReadyForPrediction();
     }
 
     @Override
@@ -187,11 +187,11 @@ public class CoClassLinker
     {
         throw new UnsupportedOperationException("Evaluation not supported");
     }
-
+    
     @Override
-    public boolean requiresTraining()
+    public boolean isReadyForPrediction(RecommenderContext aContext)
     {
-        return true;
+        return aContext.get(KEY_MODEL).map(Objects::nonNull).orElse(false);
     }
 
     private Optional<File> getModelPath()
