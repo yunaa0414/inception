@@ -767,7 +767,7 @@ public class RecommendationServiceImpl
                     }
                     
                     RecommenderContext ctx = context.get();
-                    //ctx.put(RecommenderContext.KEY_USER, aUser);
+                    ctx.setUser(aUser);
 
                     RecommendationEngineFactory<?> factory = getRecommenderFactory(recommender);
                     

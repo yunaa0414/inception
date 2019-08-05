@@ -45,6 +45,7 @@ public class RecommenderContext
     
     private final Map<String, Object> store;
     private List<LogMessage> messages;
+    private User user;
     private boolean closed = false;
 
     public RecommenderContext()
@@ -128,5 +129,13 @@ public class RecommenderContext
         {
             name = aName;
         }
+    }
+    
+    public User getUser() {
+        return user;
+    }
+    
+    public void setUser(User aUser) {
+        user = aUser;
     }
 }
