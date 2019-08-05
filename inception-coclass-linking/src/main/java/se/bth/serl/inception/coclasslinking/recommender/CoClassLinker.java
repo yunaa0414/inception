@@ -112,9 +112,8 @@ public class CoClassLinker
 
                 predictors.add(new SimpleNounPredictor(coClassModel));
                 predictors.add(new Word2VecPredictor(coClassModel, w2vModel));
-                predictors.add(new HistoryPredictor(coClassModel, 
-                        aLrService.listRecords("admin", //aUserRegistry.getCurrentUser().getUsername(), 
-                                aRecommender.getLayer()), linkerTraits.getMaxRejects()));
+                predictors.add(new HistoryPredictor(coClassModel, aLrService, 
+                                aRecommender.getLayer(), linkerTraits.getMaxRejects()));
                         
             }
             catch (RecommendationException e) {

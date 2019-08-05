@@ -21,8 +21,12 @@ package se.bth.serl.inception.coclasslinking.predictor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import de.tudarmstadt.ukp.clarin.webanno.model.AnnotationLayer;
+import de.tudarmstadt.ukp.clarin.webanno.security.model.User;
+import de.tudarmstadt.ukp.inception.recommendation.api.LearningRecordService;
 import de.tudarmstadt.ukp.inception.recommendation.api.model.LearningRecord;
 import de.tudarmstadt.ukp.inception.recommendation.api.model.LearningRecordType;
 import de.tudarmstadt.ukp.inception.recommendation.api.recommender.RecommenderContext;
@@ -36,12 +40,16 @@ public class HistoryPredictor
 {
     private int maximumRejects;
     private List<LearningRecord> learnedRecords;
+    private LearningRecordService lrService;
+    private AnnotationLayer annLayer;
 
-    public HistoryPredictor(Map<String, List<CCObject>> aCoClassModel, List<LearningRecord> aList, 
-            int aMaximumRejects)
+    public HistoryPredictor(Map<String, List<CCObject>> aCoClassModel, 
+            LearningRecordService aLrService, AnnotationLayer aLayer, int aMaximumRejects)
     {
         super(aCoClassModel);
-        learnedRecords = aList;
+        learnedRecords = null;
+        lrService = aLrService;
+        annLayer = aLayer;
         maximumRejects = aMaximumRejects;
     }
 
@@ -70,6 +78,10 @@ public class HistoryPredictor
          * - add those IRIs to the result with a score of NEGATIVE_INFINITY
          */
         if (maximumRejects > 0) {
+            if (learnedRecords == null) {
+                retrieveLearnedRecords(aContext);
+            }
+            
             learnedRecords.stream()
                 .filter(r -> r.getTokenText().toLowerCase().equals(aTerm.getTerm()) && 
                     r.getUserAction().equals(LearningRecordType.REJECTED))
@@ -105,5 +117,14 @@ public class HistoryPredictor
         });
 
         return result;
+    }
+    
+    private void retrieveLearnedRecords(RecommenderContext ctx) {
+        Optional<User> user = ctx.get(RecommenderContext.KEY_USER);
+        
+        if (user.isPresent()) {
+            User u = user.get();
+            learnedRecords = lrService.listRecords(u.getUsername(), annLayer);
+        }
     }
 }
