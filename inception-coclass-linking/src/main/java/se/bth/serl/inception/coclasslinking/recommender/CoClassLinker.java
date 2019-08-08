@@ -272,23 +272,25 @@ public class CoClassLinker
 
     private Map<String, IriFrequency> learn(List<CAS> aCasses)
     {
-        Type annotationType = CasUtil.getType(aCasses.get(0), layerName);
-        Feature labelFeature = annotationType.getFeatureByBaseName(featureName);
-
         Map<String, IriFrequency> model = new HashMap<>();
-        for (CAS cas : aCasses) {
-            for (AnnotationFS annotation : CasUtil.select(cas, annotationType)) {
-                String iri = annotation.getFeatureValueAsString(labelFeature);
-                if (isNotEmpty(iri)) {
-                    String term = annotation.getCoveredText().toLowerCase();
-
-                    IriFrequency iriFrequency = model.get(term);
-                    if (iriFrequency != null) {
-                        iriFrequency.addEntry(iri);
-                    }
-                    else {
-                        iriFrequency = new IriFrequency(iri);
-                        model.put(term, iriFrequency);
+        
+        if (aCasses.size() > 0) {
+            Type annotationType = CasUtil.getType(aCasses.get(0), layerName);
+            Feature labelFeature = annotationType.getFeatureByBaseName(featureName);
+            for (CAS cas : aCasses) {
+                for (AnnotationFS annotation : CasUtil.select(cas, annotationType)) {
+                    String iri = annotation.getFeatureValueAsString(labelFeature);
+                    if (isNotEmpty(iri)) {
+                        String term = annotation.getCoveredText().toLowerCase();
+    
+                        IriFrequency iriFrequency = model.get(term);
+                        if (iriFrequency != null) {
+                            iriFrequency.addEntry(iri);
+                        }
+                        else {
+                            iriFrequency = new IriFrequency(iri);
+                            model.put(term, iriFrequency);
+                        }
                     }
                 }
             }
