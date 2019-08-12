@@ -25,12 +25,16 @@ public class Term
     private String term;
     private String stem;
     private String posValue;
+    private int begin;
+    private int end;
 
     public Term(Token aToken)
     {
         term = aToken.getText();
         stem = aToken.getStemValue();
         posValue = aToken.getPosValue();
+        begin = aToken.getBegin();
+        end = aToken.getEnd();
     }
 
     public Term(String aText)
@@ -38,6 +42,8 @@ public class Term
         term = aText;
         stem = aText;
         posValue = "";
+        begin = 0;
+        end = aText.length();
     }
 
     public String getTerm()
@@ -59,4 +65,61 @@ public class Term
         return posValue.equals("PN") || posValue.equals("MN") || posValue.equals("AN")
                 || posValue.equals("VN") || posValue.equals("NN");
     }
+
+    
+
+    @Override
+    public String toString()
+    {
+        return "Term [term=" + term + ", stem=" + stem + ", posValue=" + posValue + ", begin="
+                + begin + ", end=" + end + "]";
+    }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + begin;
+        result = prime * result + end;
+        result = prime * result + ((stem == null) ? 0 : stem.hashCode());
+        result = prime * result + ((term == null) ? 0 : term.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Term)) {
+            return false;
+        }
+        Term other = (Term) obj;
+        if (begin != other.begin) {
+            return false;
+        }
+        if (end != other.end) {
+            return false;
+        }
+        if (stem == null) {
+            if (other.stem != null) {
+                return false;
+            }
+        }
+        else if (!stem.equals(other.stem)) {
+            return false;
+        }
+        if (term == null) {
+            if (other.term != null) {
+                return false;
+            }
+        }
+        else if (!term.equals(other.term)) {
+            return false;
+        }
+        return true;
+    }
+    
 }

@@ -24,13 +24,16 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.uima.UIMAException;
@@ -144,9 +147,17 @@ public class CoClassLinker
             Feature confidenceExplanationFeature = getScoreExplanationFeature(aCas);
             Feature isPredictionFeature = getIsPredictionFeature(aCas);
 
+            /* For some reason, we get Tokens with different POS (and possibly other varying 
+             * features) JCas with select. Hence, we keep track of the terms we are interested in 
+             * (nouns). Note that the hash function of Term does not consider the POS value since
+             * it seems that a term can be tagged with different noun POS tags. In this way, we
+             * avoid that those terms appear twice. 
+             */
+            Set<Term> uniqueTerms = new HashSet<>();
+            
             for (Token token : JCasUtil.select(aCas.getJCas(), Token.class)) {
                 Term term = new Term(token);
-                if (term.isNoun()) {
+                if (term.isNoun() && !uniqueTerms.contains(term)) {
                     Double previousScore = Double.MAX_VALUE;
                     Map<String, Score> result = calculateScore(aContext, term);
                     for (Map.Entry<String, Score> e : result.entrySet()) {
@@ -166,9 +177,10 @@ public class CoClassLinker
                             annotation.setStringValue(labelFeature, iri);
                             annotation.setBooleanValue(isPredictionFeature, true);
                             aCas.addFsToIndexes(annotation);
- 
                         }
                     }
+                    
+                    uniqueTerms.add(term);
                 }
             }
         }
@@ -178,6 +190,23 @@ public class CoClassLinker
         catch (CASException e) {
             throw new RecommendationException("Could not iterate through tokens in prediction.", e);
         }
+    }
+    
+    Collection<Token> getUniqueTokens(CAS aCas) throws CASException {
+        Collection<Token> tokens = JCasUtil.select(aCas.getJCas(), Token.class);
+        
+        System.out.println(aCas.getDocumentText());
+        Set<Token> unique = new HashSet<>();
+        for (Token t : tokens) {
+            System.out.println(t.getCoveredText() + "/" + t.getBegin() + "/" + t.getEnd() + "/" + t.getPosValue() + "/" + t.getStemValue() + "/" + t.getId() + "/" + t.getType().getName() + "/" + t.hashCode());
+        }
+        
+        
+        for (Token t : unique) {
+            System.out.println(t.getCoveredText());
+        }
+        
+        return unique;
     }
 
     @Override
