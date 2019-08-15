@@ -75,6 +75,10 @@ public class Term
                 + begin + ", end=" + end + "]";
     }
 
+    /*
+     * We deliberately do not include posValue in the calculation as we want Terms with different 
+     * noun POS tags be recognized as equal (see also comment in CoClassLinker).
+     */
     @Override
     public int hashCode()
     {
