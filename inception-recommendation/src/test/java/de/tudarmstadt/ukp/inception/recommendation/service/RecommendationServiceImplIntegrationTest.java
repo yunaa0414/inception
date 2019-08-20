@@ -175,8 +175,10 @@ public class RecommendationServiceImplIntegrationTest
                 .thenReturn(asList(layer));
         doCallRealMethod().when(annoService)
                 .upgradeCas(any(CAS.class), any(TypeSystemDescription.class));
+        doCallRealMethod().when(annoService)
+                .upgradeCas(any(CAS.class), any(CAS.class), any(TypeSystemDescription.class));
 
-        sut.monkeyPatchTypeSystem(project, jCas.getCas());
+        sut.cloneAndMonkeyPatchCAS(project, jCas.getCas(), jCas.getCas());
 
         Type type = CasUtil.getType(jCas.getCas(), layer.getName());
 

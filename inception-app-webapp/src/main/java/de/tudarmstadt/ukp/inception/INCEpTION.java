@@ -41,6 +41,7 @@ import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Primary;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
@@ -94,11 +95,13 @@ import de.tudarmstadt.ukp.inception.app.config.InceptionBanner;
         // Include WebAnno entity packages separately so we can skip the automation entities!
         "de.tudarmstadt.ukp.clarin.webanno.model",
         "de.tudarmstadt.ukp.clarin.webanno.security",
+        "de.tudarmstadt.ukp.clarin.webanno.telemetry",
         "de.tudarmstadt.ukp.inception" })
 @ImportResource({ 
         "classpath:/META-INF/application-context.xml",
         "classpath:/META-INF/rest-context.xml", 
         "classpath:/META-INF/static-resources-context.xml" })
+@EnableAsync
 public class INCEpTION
     extends SpringBootServletInitializer
 {
