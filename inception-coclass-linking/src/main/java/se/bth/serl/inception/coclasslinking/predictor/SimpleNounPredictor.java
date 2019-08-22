@@ -18,6 +18,7 @@
 
 package se.bth.serl.inception.coclasslinking.predictor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,8 +51,18 @@ public class SimpleNounPredictor
     {
         Map<String, Double> result = new HashMap<>();
 
-        List<CCObject> hits = coClassModel.get(aTerm.getStem());
-        if (hits != null) {
+        List<CCObject> hits = new ArrayList<>(); 
+        
+        updateHits(hits, aTerm.getStem());
+                
+        if (hits.size() == 0) {
+            List<Term> components = decompound(aTerm);
+            components.forEach(term -> {
+                updateHits(hits, term.getStem());
+            });
+        }
+        
+        if (hits.size() > 0) {
             int numberOfHits = hits.size();
             for (CCObject hit : hits) {
                 result.put(hit.getIri(), new Double(1.0 / numberOfHits));
@@ -59,5 +70,12 @@ public class SimpleNounPredictor
         }
 
         return result;
+    }
+    
+    private void updateHits(List<CCObject> aHits, String aStem)
+    {
+        if (coClassModel.containsKey(aStem)) {
+            aHits.addAll(coClassModel.get(aStem));
+        }
     }
 }

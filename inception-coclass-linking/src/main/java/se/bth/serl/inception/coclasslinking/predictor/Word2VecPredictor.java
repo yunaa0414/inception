@@ -22,13 +22,17 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.deeplearning4j.models.word2vec.Word2Vec;
 
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+import de.tudarmstadt.ukp.inception.recommendation.api.recommender.RecommendationException;
 import de.tudarmstadt.ukp.inception.recommendation.api.recommender.RecommenderContext;
 import se.bth.serl.inception.coclasslinking.recommender.CCObject;
 import se.bth.serl.inception.coclasslinking.recommender.Term;
+import se.bth.serl.inception.coclasslinking.utils.NLP;
 
 public class Word2VecPredictor
     extends PredictorBase
@@ -71,23 +75,42 @@ public class Word2VecPredictor
     public Map<String, Double> score(RecommenderContext aContext, Term aTerm)
     {
         Map<String, Double> result = new HashMap<>();
-
-        String word = aTerm.getTerm();
-
-        Collection<String> similarWords = wordsNearestCache.get(word);
+        mergeResults(result, aTerm.getTerm());
+     
+        if (result.size() == 0) {
+            List<Term> components = decompound(aTerm);
+            components.forEach(c -> {
+                mergeResults(result, c.getTerm());
+            });
+        }
+   
+        return result;
+    }
+    
+    private void mergeResults(Map<String, Double> aResult, String aWord) {
+        Map<String, List<CCObject>> hits = new HashMap<>();
+        
+        Collection<String> similarWords = wordsNearestCache.get(aWord);
         if (similarWords == null) {
-            similarWords = w2vModel.wordsNearest(word, numSimilarWords);
-            wordsNearestCache.put(word, similarWords);
+            similarWords = w2vModel.wordsNearest(aWord, numSimilarWords);
+            wordsNearestCache.put(aWord, similarWords);
         }
 
-        Map<String, List<CCObject>> hits = new HashMap<>();
         for (String similarWord : similarWords) {
-            List<CCObject> ccObjects = coClassModel.get(similarWord.toLowerCase());
-            if (ccObjects != null) {
-                hits.put(similarWord, ccObjects);
+            try {
+                Optional<Token> token = NLP.stem(similarWord.toLowerCase());
+                if (token.isPresent()) {
+                    String stem = token.get().getStemValue();
+                    List<CCObject> ccObjects = coClassModel.get(stem);
+                    if (ccObjects != null) {
+                        hits.put(similarWord, ccObjects);
+                    }
+                } 
+            } catch (RecommendationException e) {
+                log.error(e.getMessage());
             }
         }
-
+        
         hits.forEach((similarWord, ccObjects) -> {
             int numberOfHits = ccObjects.size();
             for (CCObject hit : ccObjects) {
@@ -103,18 +126,16 @@ public class Word2VecPredictor
                         .collect(Collectors.toList()).stream().filter(p -> p.equals(hit)).count()
                         - 1; // substract 1 as list contains also the hit
 
-                String simKey = word + similarWord;
+                String simKey = aWord + similarWord;
                 Double newScore = similarityCache.get(simKey);
-                if (newScore == null) {
+                if (newScore == null) {                    
                     newScore = new Double(
-                            1.0 / numberOfHits * w2vModel.similarity(word, similarWord));
+                            1.0 / numberOfHits * w2vModel.similarity(aWord, similarWord));
                     similarityCache.put(simKey, newScore);
                 }
 
-                result.merge(hit.getIri(), newScore, (score, increment) -> score += increment);
+                aResult.merge(hit.getIri(), newScore, (score, increment) -> score += increment);
             }
         });
-
-        return result;
     }
 }

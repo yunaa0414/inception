@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -85,7 +84,7 @@ public class CoClassLinker
 {
     public static final Key<Map<String, IriFrequency>> KEY_MODEL = new Key<>("ccMapping");
     private static final String LOOKUP_FILE = "coclass-lookup.bin";
-    private static final String W2V_FILE = "word2vec-sv.bin";
+    private static final String W2V_FILE = "spearfishing_2.bin";
     private static Map<String, List<CCObject>> coClassModel = null;
     private static Word2Vec w2vModel = null;
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -190,23 +189,6 @@ public class CoClassLinker
         catch (CASException e) {
             throw new RecommendationException("Could not iterate through tokens in prediction.", e);
         }
-    }
-    
-    Collection<Token> getUniqueTokens(CAS aCas) throws CASException {
-        Collection<Token> tokens = JCasUtil.select(aCas.getJCas(), Token.class);
-        
-        System.out.println(aCas.getDocumentText());
-        Set<Token> unique = new HashSet<>();
-        for (Token t : tokens) {
-            System.out.println(t.getCoveredText() + "/" + t.getBegin() + "/" + t.getEnd() + "/" + t.getPosValue() + "/" + t.getStemValue() + "/" + t.getId() + "/" + t.getType().getName() + "/" + t.hashCode());
-        }
-        
-        
-        for (Token t : unique) {
-            System.out.println(t.getCoveredText());
-        }
-        
-        return unique;
     }
 
     @Override
