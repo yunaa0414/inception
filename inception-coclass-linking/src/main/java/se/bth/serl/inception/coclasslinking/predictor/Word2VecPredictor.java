@@ -77,7 +77,8 @@ public class Word2VecPredictor
         Map<String, Double> result = new HashMap<>();
         mergeResults(result, aTerm.getTerm());
      
-        if (result.size() == 0) {
+        //no similar term to aTerm was found in CoClass, hence try decompounding
+        if (result.size() == 0) { 
             List<Term> components = decompound(aTerm);
             components.forEach(c -> {
                 mergeResults(result, c.getTerm());

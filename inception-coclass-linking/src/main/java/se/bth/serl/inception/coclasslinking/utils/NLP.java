@@ -25,11 +25,10 @@ import java.util.Optional;
 
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.fit.factory.AggregateBuilder;
-import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.fit.util.JCasUtil;
-import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
@@ -42,6 +41,7 @@ public class NLP
 {
     private static AnalysisEngine aBaseEngine = null;
     private static AnalysisEngine aStemEngine = null;
+    private static CAS aCas = null;
 
     public static AnalysisEngine baseAnalysisEngine() throws RecommendationException
     {
@@ -64,13 +64,12 @@ public class NLP
     public static Optional<Token> stem(String term) throws RecommendationException {
         Optional<Token> token = Optional.empty();
         
-        initStemEngine();
+        initStemEngine(term);
         
-        try {
-            JCas jCas = JCasFactory.createText(term, "sv");
-            SimplePipeline.runPipeline(jCas.getCas(), aStemEngine);
+        try {   
+            SimplePipeline.runPipeline(aCas, aStemEngine);
             
-            Collection<Token> tokens = JCasUtil.select(jCas, Token.class);
+            Collection<Token> tokens = JCasUtil.select(aCas.getJCas(), Token.class);
             
             if (tokens.size() > 0) {
                 token = tokens.stream().findFirst();
@@ -82,7 +81,7 @@ public class NLP
         return token;
     }
     
-    private static void initStemEngine() throws RecommendationException {
+    private static void initStemEngine(String term) throws RecommendationException {
         if (aStemEngine == null) {
             try {
                 AggregateBuilder builder = new AggregateBuilder();
@@ -93,5 +92,18 @@ public class NLP
                 throw new RecommendationException("Could not create stem analysis engine.", e);
             }
         }
+        
+        if (aCas == null) {
+            try {
+                aCas = aStemEngine.newCAS();
+            } catch (UIMAException e) {
+                throw new RecommendationException("Could not create JCas.", e);
+            }
+        } else {
+            aCas.reset();
+        }
+        
+        aCas.setDocumentLanguage("sv");
+        aCas.setDocumentText(term);
     }
 }
