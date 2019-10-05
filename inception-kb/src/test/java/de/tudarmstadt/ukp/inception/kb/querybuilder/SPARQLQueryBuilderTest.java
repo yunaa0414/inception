@@ -1223,7 +1223,7 @@ public class SPARQLQueryBuilderTest
     }
 
     @Test
-    public void testWithLabelMatchingExactlyAnyOf_Wikidata_FTS() throws Exception
+    public void testWithLabelMatchingExactlyAnyOfWikidataFTS() throws Exception
     {
         assertIsReachable(wikidata);
         
