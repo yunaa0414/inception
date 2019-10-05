@@ -1348,7 +1348,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
     
     @Test
-    public void getEnabledKnowledgeBases_WithOneEnabledOneDisabled_ReturnsOnlyEnabledKB()
+    public void getEnabledKnowledgeBasesWithOneEnabledOneDisabledReturnsOnlyEnabledKB()
     {
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
 
