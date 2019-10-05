@@ -83,7 +83,7 @@ public class EventRepositoryImplIntegrationTest  {
     }
     
     @Test
-    public void getLoggedEventsForDoc_WithoutLoggedEvent_ShouldReturnEmptyList()
+    public void getLoggedEventsForDocWithoutLoggedEventShouldReturnEmptyList()
     {
         List<LoggedEvent> loggedEvents = sut.listUniqueLoggedEventsForDoc(project,
                 user.getUsername(), new String[] {EVENT_TYPE_AFTER_ANNO_EVENT}, 10);
@@ -92,7 +92,7 @@ public class EventRepositoryImplIntegrationTest  {
     }
 
     @Test
-    public void getLoggedEventsForDoc_WithStoredLoggedEvent_ShouldReturnStoredLoggedEvent() 
+    public void getLoggedEventsForDocWithStoredLoggedEventShouldReturnStoredLoggedEvent() 
             throws ParseException
     {
         DateFormat df = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
