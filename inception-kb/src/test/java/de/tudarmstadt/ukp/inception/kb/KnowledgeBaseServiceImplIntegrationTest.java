@@ -1328,7 +1328,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void getChildConcepts_WithStreams_ReturnsOnlyImmediateChildren() throws Exception {
+    public void getChildConceptsWithStreamsReturnsOnlyImmediateChildren() throws Exception {
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         importKnowledgeBase("data/streams.ttl");
         KBConcept concept = sut.readConcept(kb, "http://mrklie.com/schemas/streams#input", true).get();
