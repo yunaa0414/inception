@@ -119,7 +119,7 @@ public class RecommendationServiceImplIntegrationTest
     }
     
     @Test
-    public void listRecommenders_WithOneEnabledRecommender_ShouldReturnStoredRecommender()
+    public void listRecommendersWithOneEnabledRecommenderShouldReturnStoredRecommender()
     {
         sut.createOrUpdateRecommender(rec);
 
@@ -143,7 +143,7 @@ public class RecommendationServiceImplIntegrationTest
     }
 
     @Test
-    public void getRecommenders_WithOnlyDisabledRecommender_ShouldReturnEmptyList()
+    public void getRecommendersWithOnlyDisabledRecommenderShouldReturnEmptyList()
     {
         rec.setEnabled(false);
         testEntityManager.persist(rec);
@@ -166,7 +166,7 @@ public class RecommendationServiceImplIntegrationTest
     }
 
     @Test
-    public void monkeyPatchTypeSystem_WithNer_CreatesScoreFeatures() throws Exception
+    public void monkeyPatchTypeSystemWithNerCreatesScoreFeatures() throws Exception
     {
         JCas jCas = JCasFactory.createText("I am text CAS", "de");
         when(annoService.getFullProjectTypeSystem(project))
