@@ -607,7 +607,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
     
     @Test
-    public void createProperty_WithCustomBasePrefix_ShouldCreateNewPropertyWithCustomPrefix()
+    public void createPropertyWithCustomBasePrefixShouldCreateNewPropertyWithCustomPrefix()
     {
         assumeFalse("Wikidata reification has hardcoded property prefix", 
                 Reification.WIKIDATA.equals(kb.getReification()));
@@ -850,7 +850,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
     
     @Test
-    public void createInstance_WithCustomBasePrefix_ShouldCreateNewInstanceWithCustomPrefix()
+    public void createInstanceWithCustomBasePrefixShouldCreateNewInstanceWithCustomPrefix()
     {
         KBInstance instance = buildInstance();
 
@@ -1008,7 +1008,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void deleteInstance_WithInstanceReferencedAsObject_ShouldDeleteInstanceAndStatement()
+    public void deleteInstanceWithInstanceReferencedAsObjectShouldDeleteInstanceAndStatement()
     {
         KBInstance instance = buildInstance();
         KBProperty property = buildProperty();
@@ -1267,7 +1267,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void getConceptRoots_WithWildlifeOntologyAndExplicityDefinedConcepts_ShouldReturnRootConcepts() throws Exception {
+    public void getConceptRootsWithWildlifeOntologyAndExplicityDefinedConceptsShouldReturnRootConcepts() throws Exception {
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         ValueFactory vf = SimpleValueFactory.getInstance();
         IRI rootConcept1 = vf.createIRI("http://purl.org/ontology/wo/AnimalIntelligence");
@@ -1376,7 +1376,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void listStatementsWithPredicateOrObjectReference_WithExistingStatements_ShouldOnlyReturnStatementsWhereIdIsPredOrObj()
+    public void listStatementsWithPredicateOrObjectReferenceWithExistingStatementsShouldOnlyReturnStatementsWhereIdIsPredOrObj()
     {
         KBInstance subject = buildInstance();
         KBInstance object = buildInstance();
@@ -1523,7 +1523,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void readKnowledgeBaseProfiles_ShouldReturnValidHashMapWithProfiles() throws IOException {
+    public void readKnowledgeBaseProfilesShouldReturnValidHashMapWithProfiles() throws IOException {
         Map<String, KnowledgeBaseProfile> profiles = KnowledgeBaseProfile.readKnowledgeBaseProfiles();
 
         assertThat(profiles)
