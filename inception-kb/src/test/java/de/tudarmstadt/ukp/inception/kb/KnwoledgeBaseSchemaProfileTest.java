@@ -28,7 +28,9 @@ import de.tudarmstadt.ukp.inception.kb.yaml.KnowledgeBaseProfile;
 public class KnwoledgeBaseSchemaProfileTest
 {
 
+
     @Test public void checkKBProfileAndKBObjectShouldReturnMatchingSchemaProfile()
+
     {
         String name = "Test KB";
         String classIri = "http://www.w3.org/2002/07/owl#Class";
