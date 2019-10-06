@@ -120,6 +120,7 @@ public class KnowledgeBaseSubPropertyLabelTest
     
     @Test
     public void thatChildConceptsLabel() throws IOException
+    public void thatChildConceptsLabel() throws IOException
     {
         kb = buildRemoteKnowledgeBase(project, "GND");
         String gndAccessURL = PROFILES.get("zbw-gnd").getAccess().getAccessUrl();
@@ -143,7 +144,7 @@ public class KnowledgeBaseSubPropertyLabelTest
     }
 
     @Test
-    public void readInstance_ShouldReturnInstanceWithSubPropertyLabel() throws IOException
+    public void readInstanceShouldReturnInstanceWithSubPropertyLabel() throws IOException
     {
         kb = buildRemoteKnowledgeBase(project, "GND");
         String gndAccessURL = PROFILES.get("zbw-gnd").getAccess().getAccessUrl();
@@ -161,7 +162,7 @@ public class KnowledgeBaseSubPropertyLabelTest
     }
 
     @Test
-    public void readProperty_ShouldReturnPropertyWithSubPropertyLabel() throws IOException
+    public void readPropertyShouldReturnPropertyWithSubPropertyLabel() throws IOException
     {
         kb = buildLocalKnowledgeBase(project, "Wine");
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());

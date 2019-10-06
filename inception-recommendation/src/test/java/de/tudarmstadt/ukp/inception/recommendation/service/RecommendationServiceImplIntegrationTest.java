@@ -132,7 +132,7 @@ public class RecommendationServiceImplIntegrationTest
     }
     
     @Test
-    public void getRecommenders_WithOneEnabledRecommender_ShouldReturnStoredRecommender()
+    public void getRecommendersWithOneEnabledRecommenderShouldReturnStoredRecommender()
     {
         Optional<Recommender> enabledRecommenders = sut.getEnabledRecommender(rec.getId());
 
@@ -154,7 +154,7 @@ public class RecommendationServiceImplIntegrationTest
     }
 
     @Test
-    public void getRecommenders_WithOtherRecommenderId_ShouldReturnEmptyList()
+    public void getRecommendersWithOtherRecommenderIdShouldReturnEmptyList()
     {
 
         long otherId = 9999L;
