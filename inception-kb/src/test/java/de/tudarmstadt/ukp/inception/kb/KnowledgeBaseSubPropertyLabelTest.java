@@ -119,7 +119,7 @@ public class KnowledgeBaseSubPropertyLabelTest
     }
     
     @Test
-    public void thatChildConceptsLabel() throws IOException
+    
     public void thatChildConceptsLabel() throws IOException
     {
         kb = buildRemoteKnowledgeBase(project, "GND");
