@@ -120,7 +120,6 @@ public class KnowledgeBaseSubPropertyLabelTest
     
     @Test
     public void thatChildConceptsLabel() throws IOException
-    public void thatChildConceptsLabel() throws IOException
     {
         kb = buildRemoteKnowledgeBase(project, "GND");
         String gndAccessURL = PROFILES.get("zbw-gnd").getAccess().getAccessUrl();
