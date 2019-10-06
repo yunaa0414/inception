@@ -320,7 +320,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void nonempty_WithEmptyKnowledgeBase_ShouldReturnTrue() {
+    public void nonemptyWithEmptyKnowledgeBaseShouldReturnTrue() {
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         
         sut.defineBaseProperties(kb);
@@ -1242,7 +1242,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void getConceptRoots_WithWildlifeOntology_ShouldReturnRootConcepts() throws Exception
+    public void getConceptRootsWithWildlifeOntologyShouldReturnRootConcepts() throws Exception
     {
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         importKnowledgeBase("data/wildlife_ontology.ttl");
@@ -1534,7 +1534,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void readKBIdentifiers_ShouldReturnCorrectClassInstances()
+    public void readKBIdentifiersShouldReturnCorrectClassInstances()
     {
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
 
@@ -1557,7 +1557,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void checkIfKBIsEnabledById_WithExistingAndEnabledKB_ShouldReturnTrue() {
+    public void checkIfKBIsEnabledByIdWithExistingAndEnabledKBShouldReturnTrue() {
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         String repoId = kb.getRepositoryId();
         assertThat(sut.isKnowledgeBaseEnabled(project, repoId))
@@ -1566,7 +1566,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void checkIfKBIsEnabledById_WithDisabledKBAndNonExistingId_ShouldReturnFalse() {
+    public void checkIfKBIsEnabledByIdWithDisabledKBAndNonExistingIdShouldReturnFalse() {
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         kb.setEnabled(false);
         String repoId = kb.getRepositoryId();
