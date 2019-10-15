@@ -782,7 +782,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void deletePropertyWithNotExistingPropertyShouldNoNothing() {
+    public void deleteProperty_WithNotExistingProperty_ShouldNoNothing() {
         KBProperty property = buildProperty();
         property.setIdentifier("https://nonexistent.identifier.test");
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
@@ -793,7 +793,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void deletePropertyWithReadOnlyKnowledgeBaseShouldNoNothing() {
+    public void deleteProperty_WithReadOnlyKnowledgeBase_ShouldNoNothing() {
         KBProperty property = buildProperty();
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         sut.createProperty(kb, property);
@@ -809,7 +809,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void listPropertiesWithASavedConceptAndNotAllShouldFindOneConcept() {
+    public void listProperties_WithASavedConceptAndNotAll_ShouldFindOneConcept() {
         KBProperty property = buildProperty();
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         sut.createProperty(kb, property);
@@ -825,7 +825,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void listPropertiesWithNoSavedConceptAndAllShouldFindRdfConcepts() {
+    public void listProperties_WithNoSavedConceptAndAll_ShouldFindRdfConcepts() {
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
 
         List<KBProperty> properties = sut.listProperties(kb, true);
@@ -836,7 +836,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void createInstanceWithEmptyIdentifierShouldCreateNewInstance() {
+    public void createInstance_WithEmptyIdentifier_ShouldCreateNewInstance() {
         KBInstance instance = buildInstance();
 
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
@@ -870,7 +870,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void createInstanceWithNonemptyIdentifierShouldThrowIllegalArgumentException() {
+    public void createInstance_WithNonemptyIdentifier_ShouldThrowIllegalArgumentException() {
         KBInstance instance = new KBInstance();
         instance.setIdentifier("Nonempty Identifier");
 
@@ -883,7 +883,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void createInstanceWithReadOnlyKnowledgeBaseShouldDoNothing() {
+    public void createInstance_WithReadOnlyKnowledgeBase_ShouldDoNothing() {
         KBInstance instance = buildInstance();
         kb.setReadOnly(true);
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
@@ -893,7 +893,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void readInstanceWithExistingInstanceShouldReturnSavedInstance() {
+    public void readInstance_WithExistingInstance_ShouldReturnSavedInstance() {
         KBInstance instance = buildInstance();
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         sut.createInstance(kb, instance);
@@ -907,7 +907,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void readInstanceWithNonexistentInstanceShouldReturnEmptyResult() {
+    public void readInstance_WithNonexistentInstance_ShouldReturnEmptyResult() {
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
 
         Optional<KBInstance> savedInstance = sut.readInstance(kb, "https://nonexistent.identifier.test");
@@ -918,7 +918,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void updateInstanceWithAlteredInstanceShouldUpdateInstance() {
+    public void updateInstance_WithAlteredInstance_ShouldUpdateInstance() {
         KBInstance instance = buildInstance();
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         sut.createInstance(kb, instance);
@@ -936,7 +936,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
 
     @Test
     // TODO: Check whether this is a feature or not
-    public void updateInstanceWithNonexistentInstanceShouldCreateInstance() {
+    public void updateInstance_WithNonexistentInstance_ShouldCreateInstance() {
         KBInstance instance = buildInstance();
         instance.setIdentifier("https://nonexistent.identifier.test");
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
@@ -950,7 +950,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void updateInstanceWithInstanceWithBlankIdentifierShouldThrowIllegalArgumentException() {
+    public void updateInstance_WithInstanceWithBlankIdentifier_ShouldThrowIllegalArgumentException() {
         KBInstance instance = buildInstance();
         instance.setIdentifier("");
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
@@ -962,7 +962,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void updateInstanceWithInstanceWithNullIdentifierShouldThrowIllegalArgumentException() {
+    public void updateInstance_WithInstanceWithNullIdentifier_ShouldThrowIllegalArgumentException() {
         KBInstance instance = buildInstance();
         instance.setIdentifier(null);
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
@@ -974,7 +974,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void updateInstanceWithReadOnlyKnowledgeBaseShouldDoNothing() {
+    public void updateInstance_WithReadOnlyKnowledgeBase_ShouldDoNothing() {
         KBInstance instance = buildInstance();
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         sut.createInstance(kb, instance);
@@ -994,7 +994,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void deleteInstanceWithExistingInstanceShouldDeleteInstance() {
+    public void deleteInstance_WithExistingInstance_ShouldDeleteInstance() {
         KBInstance instance = buildInstance();
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         sut.createInstance(kb, instance);
@@ -1034,7 +1034,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void deleteInstanceWithNonexistentPropertyShouldNoNothing() {
+    public void deleteInstance_WithNonexistentProperty_ShouldNoNothing() {
         KBInstance instance = buildInstance();
         instance.setIdentifier("https://nonexistent.identifier.test");
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
@@ -1045,7 +1045,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void deleteInstanceWithReadOnlyKnowledgeBaseShouldNoNothing() {
+    public void deleteInstance_WithReadOnlyKnowledgeBase_ShouldNoNothing() {
         KBInstance instance = buildInstance();
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         sut.createInstance(kb, instance);
@@ -1061,7 +1061,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void listInstancesWithASavedInstanceAndNotAllShouldFindOneInstance() {
+    public void listInstances_WithASavedInstanceAndNotAll_ShouldFindOneInstance() {
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         KBConcept concept = buildConcept();
         KBInstance instance = buildInstance();
@@ -1081,7 +1081,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void upsertStatementWithUnsavedStatementShouldCreateStatement() {
+    public void upsertStatement_WithUnsavedStatement_ShouldCreateStatement() {
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         KBConcept concept = buildConcept();
         KBProperty property = buildProperty();
@@ -1104,7 +1104,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void upsertStatementWithExistingStatementShouldUpdateStatement() {
+    public void upsertStatement_WithExistingStatement_ShouldUpdateStatement() {
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         KBConcept concept = buildConcept();
         KBProperty property = buildProperty();
@@ -1130,7 +1130,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void upsertStatementWithReadOnlyKnowledgeBaseShouldDoNothing() {
+    public void upsertStatement_WithReadOnlyKnowledgeBase_ShouldDoNothing() {
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         KBConcept concept = buildConcept();
         KBProperty property = buildProperty();
@@ -1150,7 +1150,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void deleteStatementWithExistingStatementShouldDeleteStatement() {
+    public void deleteStatement_WithExistingStatement_ShouldDeleteStatement() {
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         KBConcept concept = buildConcept();
         KBProperty property = buildProperty();
@@ -1168,7 +1168,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void deleteStatementWithNonExistentStatementShouldDoNothing() {
+    public void deleteStatement_WithNonExistentStatement_ShouldDoNothing() {
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         KBConcept concept = buildConcept();
         KBProperty property = buildProperty();
@@ -1182,7 +1182,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void deleteStatementWithReadOnlyKnowledgeBaseShouldDoNothing() {
+    public void deleteStatement_WithReadOnlyKnowledgeBase_ShouldDoNothing() {
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         KBConcept concept = buildConcept();
         KBProperty property = buildProperty();
@@ -1204,7 +1204,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void listStatementsWithExistentStatementAndNotAllShouldReturnOnlyThisStatement() {
+    public void listStatements_WithExistentStatementAndNotAll_ShouldReturnOnlyThisStatement() {
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         KBConcept concept = buildConcept();
         KBProperty property = buildProperty();
@@ -1228,7 +1228,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void listStatementsWithNonexistentStatementAndAllShouldRetuenAllStatements() {
+    public void listStatements_WithNonexistentStatementAndAll_ShouldRetuenAllStatements() {
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         KBConcept concept = buildConcept();
         sut.createConcept(kb, concept);
@@ -1294,7 +1294,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void getConceptRootsWithSparqlPlaygroundReturnsOnlyRootConcepts() throws Exception {
+    public void getConceptRoots_WithSparqlPlayground_ReturnsOnlyRootConcepts() throws Exception {
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         importKnowledgeBase("data/sparql_playground.ttl");
         setSchema(kb, RDFS.CLASS, RDFS.SUBCLASSOF, RDF.TYPE, RDFS.COMMENT, RDFS.LABEL, RDF.PROPERTY);
@@ -1309,7 +1309,7 @@ public class KnowledgeBaseServiceImplIntegrationTest  {
     }
 
     @Test
-    public void getChildConceptsWithSparqlPlaygroundReturnsAnimals() throws Exception {
+    public void getChildConcepts_WithSparqlPlayground_ReturnsAnimals() throws Exception {
         sut.registerKnowledgeBase(kb, sut.getNativeConfig());
         importKnowledgeBase("data/sparql_playground.ttl");
         setSchema(kb, RDFS.CLASS, RDFS.SUBCLASSOF, RDF.TYPE, RDFS.COMMENT, RDFS.LABEL, RDF.PROPERTY);
